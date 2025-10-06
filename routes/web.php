@@ -31,4 +31,32 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 });
 
+// Test routes for middleware
+Route::middleware(['auth', 'active'])->group(function () {
+    Route::get('/test/active', function () {
+        return response()->json([
+            'message' => 'You are an active user!',
+            'user' => auth()->user()->only(['name', 'email', 'type', 'status'])
+        ]);
+    })->name('test.active');
+});
+
+Route::middleware(['auth', 'active', 'admin'])->group(function () {
+    Route::get('/test/admin', function () {
+        return response()->json([
+            'message' => 'You are an admin!',
+            'user' => auth()->user()->only(['name', 'email', 'type', 'status'])
+        ]);
+    })->name('test.admin');
+});
+
+Route::middleware(['auth', 'active', 'officer_or_volunteer'])->group(function () {
+    Route::get('/test/officer-volunteer', function () {
+        return response()->json([
+            'message' => 'You are an officer or volunteer!',
+            'user' => auth()->user()->only(['name', 'email', 'type', 'status'])
+        ]);
+    })->name('test.officer-volunteer');
+});
+
 require __DIR__.'/auth.php';

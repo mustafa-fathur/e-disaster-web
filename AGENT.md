@@ -271,7 +271,7 @@ The application implements a **three-tier role-based access control system**:
 
 ### Middleware Implementation
 
-#### **Required Middleware Classes**
+#### **Implemented Middleware Classes**
 
 -   `EnsureUserIsActive`: Verify user has `active` status
 -   `EnsureUserIsAdmin`: Restrict access to admin users only
@@ -279,24 +279,46 @@ The application implements a **three-tier role-based access control system**:
 -   `EnsureUserCanAccessWeb`: Check web access permissions
 -   `EnsureUserCanAccessAPI`: Check API access permissions
 
+#### **Middleware Aliases Registered**
+
+```php
+// In bootstrap/app.php
+$middleware->alias([
+    'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+    'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+    'officer_or_volunteer' => \App\Http\Middleware\EnsureUserIsOfficerOrVolunteer::class,
+    'web_access' => \App\Http\Middleware\EnsureUserCanAccessWeb::class,
+    'api_access' => \App\Http\Middleware\EnsureUserCanAccessAPI::class,
+]);
+```
+
 #### **Middleware Usage Examples**
 
 ```php
 // Admin-only routes
 Route::middleware(['auth', 'active', 'admin'])->group(function () {
-    // Admin dashboard routes
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/users', [AdminController::class, 'users']);
 });
 
 // Officer and Volunteer routes (web)
 Route::middleware(['auth', 'active', 'officer_or_volunteer'])->group(function () {
-    // Operational web routes
+    Route::get('/operations', [OperationsController::class, 'index']);
+    Route::get('/disasters', [DisasterController::class, 'index']);
 });
 
 // API routes (officers and volunteers only)
 Route::middleware(['auth:sanctum', 'active', 'api_access'])->group(function () {
-    // Mobile API routes
+    Route::get('/api/disasters', [DisasterController::class, 'index']);
+    Route::post('/api/disasters', [DisasterController::class, 'store']);
 });
 ```
+
+#### **Test Routes Available**
+
+-   `/test/active` - Tests active user middleware
+-   `/test/admin` - Tests admin-only access
+-   `/test/officer-volunteer` - Tests officer/volunteer access
 
 ---
 
@@ -336,15 +358,17 @@ class DisasterVolunteer extends Model
 
 ## 🧰 Artisan Workflow
 
-| Task                     | Command                                    |
-| ------------------------ | ------------------------------------------ |
-| Create model + migration | `php artisan make:model Disaster -m`       |
-| Refresh DB               | `php artisan migrate:fresh --seed`         |
-| Generate UUID factory    | `php artisan make:factory DisasterFactory` |
-| Run tests                | `php artisan test`                         |
-| Serve app                | `php artisan serve`                        |
-| Create seeder            | `php artisan make:seeder UserSeeder`       |
-| Run specific seeder      | `php artisan db:seed --class=UserSeeder`   |
+| Task                     | Command                                          |
+| ------------------------ | ------------------------------------------------ |
+| Create model + migration | `php artisan make:model Disaster -m`             |
+| Refresh DB               | `php artisan migrate:fresh --seed`               |
+| Generate UUID factory    | `php artisan make:factory DisasterFactory`       |
+| Run tests                | `php artisan test`                               |
+| Serve app                | `php artisan serve`                              |
+| Create seeder            | `php artisan make:seeder UserSeeder`             |
+| Run specific seeder      | `php artisan db:seed --class=UserSeeder`         |
+| Create middleware        | `php artisan make:middleware EnsureUserIsActive` |
+| List routes              | `php artisan route:list --name=test`             |
 
 ## 🧪 Testing & Development Setup
 
@@ -522,6 +546,19 @@ refactor: clean up model casting
 -   **Implemented**: Type-safe enum casting in all models
 -   **Standardized**: Consistent enum usage across the application
 
+### Role-Based Middleware System
+
+-   **Created**: 5 comprehensive middleware classes for access control
+-   **Registered**: Middleware aliases in `bootstrap/app.php`
+-   **Implemented**: Role-based route protection (admin, officer, volunteer)
+-   **Added**: Test routes for middleware validation
+-   **Features**:
+    -   Active user verification
+    -   Admin-only access control
+    -   Officer/volunteer access control
+    -   Web vs API access separation
+    -   Proper error handling and redirects
+
 ## 🧭 Cursor / Copilot Role Summary
 
 When generating code in this project:
@@ -534,6 +571,8 @@ When generating code in this project:
 -   When unsure about a column or key — **refer to this file**.
 -   **Test Users**: Use predefined test users from UserSeeder for development
 -   **Factory States**: Leverage UserFactory states for role-based testing
+-   **Middleware**: Use registered middleware aliases for route protection
+-   **Access Control**: Implement role-based access using `active`, `admin`, `officer_or_volunteer` middleware
 
 ---
 
