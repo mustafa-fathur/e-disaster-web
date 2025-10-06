@@ -42,7 +42,6 @@ Route::middleware(['auth', 'active', 'admin'])->group(function () {
 
     // User Management
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
-    Route::get('/users/{user}', [App\Http\Controllers\AdminController::class, 'showUser'])->name('admin.users.show');
     Route::patch('/users/{user}/status', [App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('admin.users.status');
 
     // Volunteer Management
@@ -50,9 +49,11 @@ Route::middleware(['auth', 'active', 'admin'])->group(function () {
     Route::patch('/volunteers/{user}/approve', [App\Http\Controllers\AdminController::class, 'approveVolunteer'])->name('admin.volunteers.approve');
     Route::patch('/volunteers/{user}/reject', [App\Http\Controllers\AdminController::class, 'rejectVolunteer'])->name('admin.volunteers.reject');
 
-    // Officer Management
-    Route::get('/officers/create', [App\Http\Controllers\AdminController::class, 'createOfficer'])->name('admin.officers.create');
+    // Officer Management (forms handled via modals on index)
+    Route::get('/officers', [App\Http\Controllers\AdminController::class, 'officers'])->name('admin.officers');
     Route::post('/officers', [App\Http\Controllers\AdminController::class, 'storeOfficer'])->name('admin.officers.store');
+    Route::patch('/officers/{user}', [App\Http\Controllers\AdminController::class, 'updateOfficer'])->name('admin.officers.update');
+    Route::delete('/officers/{user}', [App\Http\Controllers\AdminController::class, 'destroyOfficer'])->name('admin.officers.destroy');
 });
 
 // Diagnostic test routes (temporary)

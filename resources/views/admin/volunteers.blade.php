@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
             <div class="space-y-6">
                 @if (session('success'))
                     <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
@@ -19,6 +19,56 @@
                     </div>
                 @endif
 
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Approval</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $volunteers->total() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Volunteers</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ \App\Models\User::where('type', 'volunteer')->count() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Volunteers</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ \App\Models\User::where('type', 'volunteer')->where('status', 'active')->count() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Volunteers Table -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
                     <div class="p-6">
@@ -80,16 +130,33 @@
                                                             Approve
                                                         </button>
                                                     </form>
-                                                    <form method="POST" action="{{ route('admin.volunteers.reject', $volunteer) }}" class="inline">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-xs" onclick="return confirm('Are you sure you want to reject this volunteer?')">
-                                                            Reject
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" onclick="document.getElementById('reject-{{ $volunteer->id }}').showModal()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-xs">
+                                                        Reject
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
+                                    
+                                    <!-- Reject Modal -->
+                                    <dialog id="reject-{{ $volunteer->id }}" class="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white p-0 shadow-xl backdrop:bg-black/40 dark:bg-gray-800">
+                                        <form method="dialog">
+                                            <div class="flex items-center justify-between border-b border-neutral-200 p-4 dark:border-neutral-700">
+                                                <h3 class="text-base font-semibold text-neutral-900 dark:text-neutral-100">Reject Volunteer</h3>
+                                                <button class="rounded-md px-2 py-1 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-700">Close</button>
+                                            </div>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.volunteers.reject', $volunteer) }}" class="grid gap-4 p-6">
+                                            @csrf
+                                            @method('PATCH')
+                                            <label class="text-sm text-neutral-700 dark:text-neutral-300">Reason</label>
+                                            <textarea name="rejection_reason" rows="4" placeholder="Provide a clear reason for rejection" class="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-gray-700 dark:text-gray-200" required></textarea>
+                                            <div class="flex items-center justify-end gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-700">
+                                                <button type="button" onclick="document.getElementById('reject-{{ $volunteer->id }}').close()" class="rounded-md px-3 py-2 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-700">Cancel</button>
+                                                <button class="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700">Reject</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
+
                                     @empty
                                         <tr>
                                             <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
@@ -110,57 +177,6 @@
                         <!-- Pagination -->
                         <div class="mt-6">
                             {{ $volunteers->links() }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Approval</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $volunteers->total() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Volunteers</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ \App\Models\User::where('type', 'volunteer')->count() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-neutral-200 dark:border-neutral-700">
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Volunteers</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ \App\Models\User::where('type', 'volunteer')->where('status', 'active')->count() }}</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

@@ -20,8 +20,9 @@
 
             @if(auth()->user()->type->value === 'admin')
             <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Users')" class="grid">
-                    <flux:navlist.item :href="route('admin.users')" :current="request()->routeIs('admin.users*')" wire:navigate>{{ __('Officers') }}</flux:navlist.item>
+                <flux:navlist.group :heading="__('User Management')" class="grid">
+                    <flux:navlist.item :href="route('admin.users')" :current="request()->routeIs('admin.users*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('admin.officers')" :current="request()->routeIs('admin.officers*')" wire:navigate>{{ __('Officers') }}</flux:navlist.item>
                     <flux:navlist.item :href="route('admin.volunteers')" :current="request()->routeIs('admin.volunteers*')" wire:navigate>{{ __('Volunteers') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>

@@ -85,6 +85,14 @@ routes/
 -   Use `->cascadeOnDelete()` and `->cascadeOnUpdate()` where logical.
 -   Disable foreign keys for polymorphic or flexible relationships (like `pictures`).
 
+### User Profile Fields
+
+-   Users table also includes optional profile fields used across the admin UI:
+    -   `nik` (string, 50)
+    -   `phone` (string, 50)
+    -   `address` (string, 255)
+    -   `rejection_reason` (text) — set when a volunteer is rejected by admin
+
 ### User Types & Status
 
 -   **User Types**:
@@ -484,6 +492,7 @@ User::factory()->withLocation()->create();        // includes location data
 -   Admin:
     -   Manage Officers
     -   Approve Volunteers
+    -   Reject Volunteers with mandatory reason (stored in `users.rejection_reason`)
 -   All roles with role-specific views:
     -   Dashboard
     -   Disasters list
@@ -630,6 +639,17 @@ refactor: clean up model casting
     -   Web vs API access separation
     -   Proper error handling and redirects
 
+### Admin UI/UX Simplification
+
+-   Consolidated Users/Officers/Volunteers into single-page admin views with inline modals
+-   Removed standalone officer create/edit pages and corresponding routes
+-   Dashboard includes contextual heading/description; redundant quick action removed
+
+### Volunteer Rejection Reason
+
+-   Added `rejection_reason` to `users` table and `User` model `$fillable`
+-   Rejection now requires a reason; stored and available for auditing
+
 ## 🧭 Cursor / Copilot Role Summary
 
 When generating code in this project:
@@ -644,6 +664,14 @@ When generating code in this project:
 -   **Factory States**: Leverage UserFactory states for role-based testing
 -   **Middleware**: Use registered middleware aliases for route protection
 -   **Access Control**: Implement role-based access using `active`, `admin`, `officer_or_volunteer` middleware
+
+### View Structure (Admin)
+
+-   Admin management screens are single Blade files:
+    -   `resources/views/admin/users.blade.php`
+    -   `resources/views/admin/officers.blade.php`
+    -   `resources/views/admin/volunteers.blade.php`
+-   Create/Edit forms for Officers are handled via modals inside the index page; no separate create/edit routes.
 
 ---
 
@@ -683,10 +711,11 @@ The application uses a sidebar layout component at `resources/views/components/l
 -   Bencana (All of disaster derivative is on the disaster detail)
 -   Petugas (Officer management)
 -   Sukarelawan
-    - Manajemen
-    - Persetujuan
+    -   Manajemen
+    -   Persetujuan
 
 ### Notes
+
 -   Icons use common Flux icons only (e.g., `home`, `users`, `plus`, `document`, `heart`, `cog`) to avoid missing-icon errors.
 -   Navigation links use `wire:navigate` to integrate smoothly with Livewire/Volt.
 -   Active state highlighting is handled via `:current="request()->routeIs('name*')"` where routes exist.

@@ -22,6 +22,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->timestamp('password_changed_at')->nullable();
+            
+            // Profile fields
+            $table->string('nik', 50)->nullable();
+            $table->string('phone', 50)->nullable();
+            $table->string('address', 255)->nullable();
 
             $table->string('timezone')->nullable();
             $table->timestamp('last_login_at')->nullable();
@@ -29,6 +34,8 @@ return new class extends Migration
             $table->text('coordinate')->nullable();
             $table->float('lat')->nullable();
             $table->float('long')->nullable();
+
+            $table->text('rejection_reason')->nullable();
 
             // Laravel helpers
             $table->rememberToken();

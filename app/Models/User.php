@@ -35,7 +35,11 @@ class User extends Authenticatable
         'location',
         'coordinate',
         'lat',
-        'long'
+        'long',
+        'nik',
+        'phone',
+        'address',
+        'rejection_reason',
     ];
 
     /**

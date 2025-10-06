@@ -10,24 +10,7 @@ use Illuminate\View\View;
 
 class AdminController extends Controller
 {
-    /**
-     * Display the admin dashboard.
-     */
-    public function dashboard(): View
-    {
-        $stats = [
-            'total_users' => User::count(),
-            'active_users' => User::where('status', UserStatusEnum::ACTIVE)->count(),
-            'admin_users' => User::where('type', UserTypeEnum::ADMIN)->count(),
-            'officer_users' => User::where('type', UserTypeEnum::OFFICER)->count(),
-            'volunteer_users' => User::where('type', UserTypeEnum::VOLUNTEER)->count(),
-            'registered_volunteers' => User::where('type', UserTypeEnum::VOLUNTEER)
-                ->where('status', UserStatusEnum::REGISTERED)->count(),
-        ];
-
-        return view('admin.dashboard', compact('stats'));
-    }
-
+    
     /**
      * Display all users for management.
      */
@@ -56,7 +39,7 @@ class AdminController extends Controller
 
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users', compact('users'));
     }
 
     /**
@@ -69,7 +52,7 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('admin.volunteers.index', compact('volunteers'));
+        return view('admin.volunteers', compact('volunteers'));
     }
 
     /**
@@ -89,24 +72,24 @@ class AdminController extends Controller
     /**
      * Reject a volunteer.
      */
-    public function rejectVolunteer(User $user)
+    public function rejectVolunteer(User $user, Request $request)
     {
         if ($user->type !== UserTypeEnum::VOLUNTEER || $user->status !== UserStatusEnum::REGISTERED) {
             return redirect()->back()->withErrors(['error' => 'Invalid volunteer status.']);
         }
 
-        $user->update(['status' => UserStatusEnum::INACTIVE]);
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:500',
+        ]);
 
-        return redirect()->back()->with('success', 'Volunteer rejected.');
+        $user->update([
+            'status' => UserStatusEnum::INACTIVE,
+            'rejection_reason' => $validated['rejection_reason'],
+        ]);
+
+        return redirect()->back()->with('success', 'Volunteer rejected with reason saved.');
     }
 
-    /**
-     * Create a new officer.
-     */
-    public function createOfficer(): View
-    {
-        return view('admin.officers.create');
-    }
 
     /**
      * Store a new officer.
@@ -129,6 +112,58 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.users')->with('success', 'Officer created successfully.');
+    }
+
+    /**
+     * Officers list page.
+     */
+    public function officers(Request $request): View
+    {
+        $officers = User::where('type', UserTypeEnum::OFFICER)
+            ->when($request->search, function ($q) use ($request) {
+                $q->where(function ($s) use ($request) {
+                    $s->where('name', 'like', "%{$request->search}%")
+                      ->orWhere('email', 'like', "%{$request->search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('admin.officers', compact('officers'));
+    }
+
+    // Removed editOfficer view endpoint; edit handled via modal on index
+
+    /** Update officer */
+    public function updateOfficer(User $user, Request $request)
+    {
+        abort_unless($user->type === UserTypeEnum::OFFICER, 404);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'status' => 'required|in:active,inactive',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $update = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'status' => $validated['status'],
+        ];
+        if (!empty($validated['password'])) {
+            $update['password'] = bcrypt($validated['password']);
+        }
+        $user->update($update);
+
+        return redirect()->route('admin.officers')->with('success', 'Officer updated successfully.');
+    }
+
+    /** Delete officer */
+    public function destroyOfficer(User $user)
+    {
+        abort_unless($user->type === UserTypeEnum::OFFICER, 404);
+        $user->delete();
+        return redirect()->route('admin.officers')->with('success', 'Officer deleted successfully.');
     }
 
     /**
