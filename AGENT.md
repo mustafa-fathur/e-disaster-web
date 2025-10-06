@@ -295,19 +295,37 @@ $middleware->alias([
 #### **Middleware Usage Examples**
 
 ```php
-// Admin-only routes
+// Unified dashboard for all roles (admin will be redirected to admin dashboard)
+Route::get('/dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified', 'active']);
+
+// Admin area without URL prefix (guarded by middleware)
 Route::middleware(['auth', 'active', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-    Route::get('/admin/users', [AdminController::class, 'users']);
+    // Admin Dashboard (optional direct access besides redirect from /dashboard)
+    Route::get('/admin-dashboard', [AdminController::class, 'dashboard']);
+
+    // User Management
+    Route::get('/users', [AdminController::class, 'users']);
+    Route::get('/users/{user}', [AdminController::class, 'showUser']);
+    Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus']);
+
+    // Volunteer Management
+    Route::get('/volunteers', [AdminController::class, 'volunteers']);
+    Route::patch('/volunteers/{user}/approve', [AdminController::class, 'approveVolunteer']);
+    Route::patch('/volunteers/{user}/reject', [AdminController::class, 'rejectVolunteer']);
+
+    // Officer Management
+    Route::get('/officers/create', [AdminController::class, 'createOfficer']);
+    Route::post('/officers', [AdminController::class, 'storeOfficer']);
 });
 
-// Officer and Volunteer routes (web)
+// Officer and Volunteer (Web)
 Route::middleware(['auth', 'active', 'officer_or_volunteer'])->group(function () {
     Route::get('/operations', [OperationsController::class, 'index']);
     Route::get('/disasters', [DisasterController::class, 'index']);
 });
 
-// API routes (officers and volunteers only)
+// API (officer and volunteer)
 Route::middleware(['auth:sanctum', 'active', 'api_access'])->group(function () {
     Route::get('/api/disasters', [DisasterController::class, 'index']);
     Route::post('/api/disasters', [DisasterController::class, 'store']);
@@ -453,6 +471,59 @@ User::factory()->withLocation()->create();        // includes location data
 
 ---
 
+## 🧭 Application Features (Web & API)
+
+### Web (Laravel + Livewire)
+
+-   All Roles:
+    -   Login
+    -   Profile (built-in Laravel auth)
+    -   Notifications list
+-   User (Volunteer) only:
+    -   Register (requires admin approval before logging in)
+-   Admin:
+    -   Manage Officers
+    -   Approve Volunteers
+-   All roles with role-specific views:
+    -   Dashboard
+    -   Disasters list
+    -   Add new disaster (form)
+    -   Disaster detail
+    -   Update disaster (form)
+    -   Add new disaster report (form)
+    -   Update disaster report (form)
+    -   Disaster victims list
+    -   Add new disaster victim (form)
+    -   Disaster victim detail
+    -   Update disaster victim (form)
+    -   Disaster aids list
+    -   Add new disaster aid (form)
+    -   Update disaster aid (form)
+
+### API (RESTful for Mobile)
+
+-   Volunteer registration (requires admin approval before logging in)
+-   Login
+-   Profile
+-   Notifications (real-time with FCM)
+-   Dashboard (home)
+-   Disasters list
+-   Add new disaster (form)
+-   Disaster detail
+-   Update disaster (form)
+-   Add new disaster report (form)
+-   Update disaster report (form)
+-   Disaster victims list
+-   Add new disaster victim (form)
+-   Disaster victim detail
+-   Update disaster victim (form)
+-   Disaster aids list
+-   Add new disaster aid (form)
+-   Update disaster aid (form)
+-   Map/location for disaster reports update (optional)
+
+---
+
 ## 🧑‍💻 Agent Instructions (for Cursor / Copilot)
 
 > Always follow these when writing code in this repository.
@@ -580,3 +651,42 @@ When generating code in this project:
 > **Version:** 1.0
 > **Date:** October 2025
 > **Purpose:** Standardize AI-generated code across Cursor and Copilot for e-Disaster Laravel backend.
+
+---
+
+## 🧭 Sidebar Navigation Structure
+
+The application uses a sidebar layout component at `resources/views/components/layouts/app/sidebar.blade.php`.
+
+### Current Structure
+
+-   Platform
+
+    -   Dashboard → route `dashboard` (visible to all authenticated users)
+
+-   Admin (visible only when `auth()->user()->type->value === 'admin'`)
+
+    -   Users → route `admin.users`
+    -   Volunteers → route `admin.volunteers`
+    -   Officers → route `admin.officers.create`
+
+-   Disasters (currently placeholders; routes to be wired when features are implemented)
+    -   Disaster List → href `#` (intended: `disasters.index`)
+    -   Add Disaster → href `#` (intended: `disasters.create`)
+    -   Reports → href `#` (intended: `reports.index`)
+    -   Victims → href `#` (intended: `victims.index`)
+    -   Aid → href `#` (intended: `aids.index`)
+
+### Dropdown Structure (Tree Format) // Proposed
+
+-   Dashboard
+-   Bencana (All of disaster derivative is on the disaster detail)
+-   Petugas (Officer management)
+-   Sukarelawan
+    - Manajemen
+    - Persetujuan
+
+### Notes
+-   Icons use common Flux icons only (e.g., `home`, `users`, `plus`, `document`, `heart`, `cog`) to avoid missing-icon errors.
+-   Navigation links use `wire:navigate` to integrate smoothly with Livewire/Volt.
+-   Active state highlighting is handled via `:current="request()->routeIs('name*')"` where routes exist.

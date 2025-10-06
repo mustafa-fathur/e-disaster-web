@@ -13,13 +13,24 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item href="#" :current="request()->routeIs('disasters*')">{{ __('Disasters') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
+            @if(auth()->user()->type->value === 'admin')
+            <flux:navlist variant="outline">
+                <flux:navlist.group :heading="__('Users')" class="grid">
+                    <flux:navlist.item :href="route('admin.users')" :current="request()->routeIs('admin.users*')" wire:navigate>{{ __('Officers') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('admin.volunteers')" :current="request()->routeIs('admin.volunteers*')" wire:navigate>{{ __('Volunteers') }}</flux:navlist.item>
+                </flux:navlist.group>
+            </flux:navlist>
+
+            @endif
+
             <flux:spacer />
 
-            <flux:navlist variant="outline">
+            <!-- <flux:navlist variant="outline">
                 <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
                 {{ __('Repository') }}
                 </flux:navlist.item>
@@ -27,7 +38,7 @@
                 <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
                 {{ __('Documentation') }}
                 </flux:navlist.item>
-            </flux:navlist>
+            </flux:navlist> -->
 
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
