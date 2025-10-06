@@ -68,6 +68,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            // Set default values for new users
+            if (empty($user->type)) {
+                $user->type = UserTypeEnum::VOLUNTEER;
+            }
+            if (empty($user->status)) {
+                $user->status = UserStatusEnum::REGISTERED;
+            }
+        });
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string

@@ -25,8 +25,8 @@ return new class extends Migration
 
             $table->string('timezone')->nullable();
             $table->timestamp('last_login_at')->nullable();
-            $table->string('location');
-            $table->text('coordinate');
+            $table->string('location')->nullable();
+            $table->text('coordinate')->nullable();
             $table->float('lat')->nullable();
             $table->float('long')->nullable();
 
