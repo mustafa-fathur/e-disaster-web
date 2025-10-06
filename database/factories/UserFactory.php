@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserStatusEnum;
+use App\Enums\UserTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,10 +26,18 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'type' => UserTypeEnum::VOLUNTEER,
+            'status' => UserStatusEnum::REGISTERED,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'timezone' => fake()->timezone(),
+            'last_login_at' => fake()->optional(0.7)->dateTimeBetween('-30 days', 'now'),
+            'location' => fake()->optional(0.6)->city(),
+            'coordinate' => fake()->optional(0.6)->latitude() . ',' . fake()->optional(0.6)->longitude(),
+            'lat' => fake()->optional(0.6)->latitude(),
+            'long' => fake()->optional(0.6)->longitude(),
             'remember_token' => Str::random(10),
         ];
     }
@@ -39,6 +49,76 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Create an admin user.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserTypeEnum::ADMIN,
+            'status' => UserStatusEnum::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create an officer user.
+     */
+    public function officer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserTypeEnum::OFFICER,
+            'status' => UserStatusEnum::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create a volunteer user.
+     */
+    public function volunteer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserTypeEnum::VOLUNTEER,
+            'status' => UserStatusEnum::REGISTERED,
+        ]);
+    }
+
+    /**
+     * Create an active volunteer user.
+     */
+    public function activeVolunteer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => UserTypeEnum::VOLUNTEER,
+            'status' => UserStatusEnum::ACTIVE,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create an inactive user.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatusEnum::INACTIVE,
+        ]);
+    }
+
+    /**
+     * Create a user with location data.
+     */
+    public function withLocation(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'location' => fake()->city() . ', ' . fake()->country(),
+            'coordinate' => fake()->latitude() . ',' . fake()->longitude(),
+            'lat' => fake()->latitude(),
+            'long' => fake()->longitude(),
         ]);
     }
 }
