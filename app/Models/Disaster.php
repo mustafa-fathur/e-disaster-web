@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Enums\DisasterTypeEnum;
+use App\Enums\DisasterStatusEnum;
+use App\Enums\DisasterSourceEnum;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Disaster extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'reported_by',
@@ -27,6 +31,9 @@ class Disaster extends Model
     ];
 
     protected $casts = [
+        'source' => DisasterSourceEnum::class,
+        'types' => DisasterTypeEnum::class,
+        'status' => DisasterStatusEnum::class,
         'date' => 'date',
         'time' => 'datetime:H:i',
         'lat' => 'float',
@@ -43,5 +50,25 @@ class Disaster extends Model
     public function volunteers()
     {
         return $this->hasMany(DisasterVolunteer::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(DisasterReport::class);
+    }
+
+    public function victims()
+    {
+        return $this->hasMany(DisasterVictim::class);
+    }
+
+    public function aids()
+    {
+        return $this->hasMany(DisasterAid::class);
+    }
+
+    public function pictures()
+    {
+        return $this->morphMany(Picture::class, 'foreign_id');
     }
 }

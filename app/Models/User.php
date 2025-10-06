@@ -3,7 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserTypeEnum;
+use App\Enums\UserStatusEnum;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -12,7 +16,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, HasUuids, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +24,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'type',
+        'status',
         'name',
         'email',
         'password',
@@ -30,7 +36,6 @@ class User extends Authenticatable
         'coordinate',
         'lat',
         'long'
-
     ];
 
     /**
@@ -51,6 +56,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'type' => UserTypeEnum::class,
+            'status' => UserStatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'password_changed_at' => 'datetime',
@@ -72,4 +79,35 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    /**
+     * Get the disasters reported by this user
+     */
+    public function reportedDisasters()
+    {
+        return $this->hasMany(Disaster::class, 'reported_by');
+    }
+
+    /**
+     * Get the disaster volunteers for this user
+     */
+    public function disasterVolunteers()
+    {
+        return $this->hasMany(DisasterVolunteer::class);
+    }
+
+    /**
+     * Get the notifications for this user
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * Get the disasters this user is volunteering for
+     */
+    public function disasters()
+    {
+        return $this->belongsToMany(Disaster::class, 'disaster_volunteers');
+    }
 }

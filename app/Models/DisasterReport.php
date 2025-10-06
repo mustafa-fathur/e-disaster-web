@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DisasterReport extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'disaster_id',
@@ -31,5 +32,10 @@ class DisasterReport extends Model
     public function reporter()
     {
         return $this->belongsTo(DisasterVolunteer::class, 'reported_by');
+    }
+
+    public function pictures()
+    {
+        return $this->morphMany(Picture::class, 'foreign_id');
     }
 }
