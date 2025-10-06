@@ -4,14 +4,17 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
 
+// Public
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+// Unified dashboard (role-aware)
+Route::get('dashboard', App\Http\Controllers\DashboardController::class)
+    ->middleware(['auth', 'verified', 'active'])
     ->name('dashboard');
 
+// Authenticated settings (shared for all roles)
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -31,7 +34,28 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 });
 
-// Test routes for middleware
+// Admin-only area (no URL prefix; guarded by middleware)
+Route::middleware(['auth', 'active', 'admin'])->group(function () {
+    // Admin Dashboard (also accessible via unified /dashboard)
+    Route::get('/admin-dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])
+        ->name('admin.dashboard.alt');
+
+    // User Management
+    Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
+    Route::get('/users/{user}', [App\Http\Controllers\AdminController::class, 'showUser'])->name('admin.users.show');
+    Route::patch('/users/{user}/status', [App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('admin.users.status');
+
+    // Volunteer Management
+    Route::get('/volunteers', [App\Http\Controllers\AdminController::class, 'volunteers'])->name('admin.volunteers');
+    Route::patch('/volunteers/{user}/approve', [App\Http\Controllers\AdminController::class, 'approveVolunteer'])->name('admin.volunteers.approve');
+    Route::patch('/volunteers/{user}/reject', [App\Http\Controllers\AdminController::class, 'rejectVolunteer'])->name('admin.volunteers.reject');
+
+    // Officer Management
+    Route::get('/officers/create', [App\Http\Controllers\AdminController::class, 'createOfficer'])->name('admin.officers.create');
+    Route::post('/officers', [App\Http\Controllers\AdminController::class, 'storeOfficer'])->name('admin.officers.store');
+});
+
+// Diagnostic test routes (temporary)
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/test/active', function () {
         return response()->json([
