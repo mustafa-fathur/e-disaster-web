@@ -54,6 +54,15 @@ Route::middleware(['auth', 'active', 'admin'])->group(function () {
     Route::post('/officers', [App\Http\Controllers\AdminController::class, 'storeOfficer'])->name('admin.officers.store');
     Route::patch('/officers/{user}', [App\Http\Controllers\AdminController::class, 'updateOfficer'])->name('admin.officers.update');
     Route::delete('/officers/{user}', [App\Http\Controllers\AdminController::class, 'destroyOfficer'])->name('admin.officers.destroy');
+
+    // Disasters
+    Route::get('/disasters', [App\Http\Controllers\DisasterController::class, 'index'])->name('admin.disasters');
+    Route::get('/disasters/create', [App\Http\Controllers\DisasterController::class, 'create'])->name('admin.disasters.create');
+    Route::post('/disasters', [App\Http\Controllers\DisasterController::class, 'store'])->name('admin.disasters.store');
+    Route::get('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'show'])->name('admin.disasters.show');
+    Route::get('/disasters/{disaster}/edit', [App\Http\Controllers\DisasterController::class, 'edit'])->name('admin.disasters.edit');
+    Route::patch('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'update'])->name('admin.disasters.update');
+    Route::delete('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'destroy'])->name('admin.disasters.destroy');
 });
 
 // Diagnostic test routes (temporary)
