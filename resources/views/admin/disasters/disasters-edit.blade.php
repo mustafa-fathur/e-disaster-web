@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
             <div class="space-y-6">
                 <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5 dark:bg-gray-800">
                     <form method="POST" action="{{ route('admin.disasters.update', $disaster) }}" class="grid grid-cols-1 gap-6 md:grid-cols-2">

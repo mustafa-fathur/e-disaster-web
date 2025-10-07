@@ -54,7 +54,7 @@ Route::middleware(['auth', 'active', 'admin'])->group(function () {
     Route::post('/officers', [App\Http\Controllers\AdminController::class, 'storeOfficer'])->name('admin.officers.store');
     Route::patch('/officers/{user}', [App\Http\Controllers\AdminController::class, 'updateOfficer'])->name('admin.officers.update');
     Route::delete('/officers/{user}', [App\Http\Controllers\AdminController::class, 'destroyOfficer'])->name('admin.officers.destroy');
-
+    
     // Disasters
     Route::get('/disasters', [App\Http\Controllers\DisasterController::class, 'index'])->name('admin.disasters');
     Route::get('/disasters/create', [App\Http\Controllers\DisasterController::class, 'create'])->name('admin.disasters.create');

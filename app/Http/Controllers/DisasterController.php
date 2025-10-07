@@ -22,7 +22,7 @@ class DisasterController extends Controller
 
     public function create(): View
     {
-        return view('admin.disasters-create', [
+        return view('admin.disasters.disasters-create', [
             'types' => DisasterTypeEnum::cases(),
             'statuses' => DisasterStatusEnum::cases(),
             'sources' => DisasterSourceEnum::cases(),
@@ -55,12 +55,13 @@ class DisasterController extends Controller
 
     public function show(Disaster $disaster): View
     {
-        return view('admin.disasters-show', compact('disaster'));
+        $reports = $disaster->reports()->latest()->paginate(10);
+        return view('admin.disasters.disasters-show', compact('disaster', 'reports'));
     }
 
     public function edit(Disaster $disaster): View
     {
-        return view('admin.disasters-edit', [
+        return view('admin.disasters.disasters-edit', [
             'disaster' => $disaster,
             'types' => DisasterTypeEnum::cases(),
             'statuses' => DisasterStatusEnum::cases(),
