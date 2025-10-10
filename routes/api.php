@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DisasterController;
 use App\Http\Controllers\Api\V1\DisasterReportController;
+use App\Http\Controllers\Api\V1\DisasterVictimController;
+use App\Http\Controllers\Api\V1\DisasterAidController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,18 +71,18 @@ Route::prefix('v1')->group(function () {
         Route::delete('/disasters/{id}/reports/{reportId}', [DisasterReportController::class, 'deleteDisasterReport']);
 
         // Disaster Victims (Only for assigned volunteers/officers)
-        Route::get('/disasters/{id}/victims', [DisasterController::class, 'getDisasterVictims']);
-        Route::post('/disasters/{id}/victims', [DisasterController::class, 'createDisasterVictim']);
-        Route::get('/disasters/{id}/victims/{victimId}', [DisasterController::class, 'getDisasterVictim']);
-        Route::put('/disasters/{id}/victims/{victimId}', [DisasterController::class, 'updateDisasterVictim']);
-        Route::delete('/disasters/{id}/victims/{victimId}', [DisasterController::class, 'deleteDisasterVictim']);
+        Route::get('/disasters/{id}/victims', [DisasterVictimController::class, 'getDisasterVictims']);
+        Route::post('/disasters/{id}/victims', [DisasterVictimController::class, 'createDisasterVictim']);
+        Route::get('/disasters/{id}/victims/{victimId}', [DisasterVictimController::class, 'getDisasterVictim']);
+        Route::put('/disasters/{id}/victims/{victimId}', [DisasterVictimController::class, 'updateDisasterVictim']);
+        Route::delete('/disasters/{id}/victims/{victimId}', [DisasterVictimController::class, 'deleteDisasterVictim']);
 
         // Disaster Aids (Only for assigned volunteers/officers)
-        Route::get('/disasters/{id}/aids', [DisasterController::class, 'getDisasterAids']);
-        Route::post('/disasters/{id}/aids', [DisasterController::class, 'createDisasterAid']);
-        Route::get('/disasters/{id}/aids/{aidId}', [DisasterController::class, 'getDisasterAid']);
-        Route::put('/disasters/{id}/aids/{aidId}', [DisasterController::class, 'updateDisasterAid']);
-        Route::delete('/disasters/{id}/aids/{aidId}', [DisasterController::class, 'deleteDisasterAid']);
+        Route::get('/disasters/{id}/aids', [DisasterAidController::class, 'getDisasterAids']);
+        Route::post('/disasters/{id}/aids', [DisasterAidController::class, 'createDisasterAid']);
+        Route::get('/disasters/{id}/aids/{aidId}', [DisasterAidController::class, 'getDisasterAid']);
+        Route::put('/disasters/{id}/aids/{aidId}', [DisasterAidController::class, 'updateDisasterAid']);
+        Route::delete('/disasters/{id}/aids/{aidId}', [DisasterAidController::class, 'deleteDisasterAid']);
 
     });
 
