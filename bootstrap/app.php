@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'officer_or_volunteer' => \App\Http\Middleware\EnsureUserIsOfficerOrVolunteer::class,
             'web_access' => \App\Http\Middleware\EnsureUserCanAccessWeb::class,
             'api_access' => \App\Http\Middleware\EnsureUserCanAccessAPI::class,
+            'api_auth' => \App\Http\Middleware\EnsureApiAuthentication::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

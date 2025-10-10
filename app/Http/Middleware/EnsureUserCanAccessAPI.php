@@ -17,13 +17,13 @@ class EnsureUserCanAccessAPI
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (!auth('sanctum')->check()) {
             return response()->json([
                 'message' => 'Unauthenticated.'
             ], 401);
         }
 
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         // Check if user is active
         if ($user->status !== UserStatusEnum::ACTIVE) {

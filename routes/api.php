@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,19 +17,19 @@ Route::prefix('v1')->group(function () {
     // Healthcheck
     Route::get('/health', function () {
         return response()->json(['status' => 'ok']);
-    })->name('api.v1.health');
+    });
 
     // Public Auth Endpoints
     Route::prefix('auth')->group(function () {
-        Route::post('/login', function () {
-            // TODO: Implement login via Sanctum or JWT
-            return response()->json(['message' => 'Login endpoint placeholder'], 200);
-        })->name('api.v1.auth.login');
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
+    });
 
-        Route::post('/register', function () {
-            // Volunteer registration (requires admin approval)
-            return response()->json(['message' => 'Register endpoint placeholder'], 201);
-        })->name('api.v1.auth.register');
+    // Protected Endpoints (Officer/Volunteer)
+    Route::middleware(['api_auth', 'api_access'])->group(function () {
+        // Auth endpoints
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
     });
 
 });
