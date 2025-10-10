@@ -63,8 +63,12 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:50',
-            'address' => 'nullable|string|max:255',
+            'nik' => 'required|string|max:45|unique:users',
+            'phone' => 'required|string|max:45',
+            'address' => 'required|string',
+            'gender' => 'required|boolean',
+            'date_of_birth' => 'required|date|before:today',
+            'reason_to_join' => 'nullable|string|max:245',
         ]);
 
         if ($validator->fails()) {
@@ -80,8 +84,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'type' => UserTypeEnum::VOLUNTEER,
             'status' => UserStatusEnum::REGISTERED,
+            'email_verified' => false,
+            'nik' => $request->nik,
             'phone' => $request->phone,
             'address' => $request->address,
+            'gender' => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
+            'reason_to_join' => $request->reason_to_join,
+            'registered_at' => now(),
         ]);
 
         return response()->json([
@@ -92,6 +102,11 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'type' => $user->type->value,
                 'status' => $user->status->value,
+                'nik' => $user->nik,
+                'phone' => $user->phone,
+                'address' => $user->address,
+                'gender' => $user->gender,
+                'date_of_birth' => $user->date_of_birth->format('Y-m-d'),
             ]
         ], 201);
     }
@@ -116,8 +131,19 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'type' => $user->type->value,
                 'status' => $user->status->value,
+                'email_verified' => $user->email_verified,
+                'nik' => $user->nik,
                 'phone' => $user->phone,
                 'address' => $user->address,
+                'gender' => $user->gender,
+                'date_of_birth' => $user->date_of_birth?->format('Y-m-d'),
+                'reason_to_join' => $user->reason_to_join,
+                'registered_at' => $user->registered_at?->format('Y-m-d H:i:s'),
+                'approved_at' => $user->approved_at?->format('Y-m-d H:i:s'),
+                'timezone' => $user->timezone,
+                'location' => $user->location,
+                'lat' => $user->lat,
+                'long' => $user->long,
             ]
         ], 200);
     }
