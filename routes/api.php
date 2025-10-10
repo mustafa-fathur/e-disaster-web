@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DisasterController;
+use App\Http\Controllers\Api\V1\DisasterReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,14 +59,14 @@ Route::prefix('v1')->group(function () {
         
         // Disaster Management (Only for assigned volunteers/officers)
         Route::put('/disasters/{id}', [DisasterController::class, 'updateDisaster']);
-        Route::delete('/disasters/{id}', [DisasterController::class, 'deleteDisaster']);
+        Route::put('/disasters/{id}/cancel', [DisasterController::class, 'cancelDisaster']);
 
         // Disaster Reports (Only for assigned volunteers/officers)
-        Route::get('/disasters/{id}/reports', [DisasterController::class, 'getDisasterReports']);
-        Route::post('/disasters/{id}/reports', [DisasterController::class, 'createDisasterReport']);
-        Route::get('/disasters/{id}/reports/{reportId}', [DisasterController::class, 'getDisasterReport']);
-        Route::put('/disasters/{id}/reports/{reportId}', [DisasterController::class, 'updateDisasterReport']);
-        Route::delete('/disasters/{id}/reports/{reportId}', [DisasterController::class, 'deleteDisasterReport']);
+        Route::get('/disasters/{id}/reports', [DisasterReportController::class, 'getDisasterReports']);
+        Route::post('/disasters/{id}/reports', [DisasterReportController::class, 'createDisasterReport']);
+        Route::get('/disasters/{id}/reports/{reportId}', [DisasterReportController::class, 'getDisasterReport']);
+        Route::put('/disasters/{id}/reports/{reportId}', [DisasterReportController::class, 'updateDisasterReport']);
+        Route::delete('/disasters/{id}/reports/{reportId}', [DisasterReportController::class, 'deleteDisasterReport']);
 
         // Disaster Victims (Only for assigned volunteers/officers)
         Route::get('/disasters/{id}/victims', [DisasterController::class, 'getDisasterVictims']);

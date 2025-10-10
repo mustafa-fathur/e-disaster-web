@@ -28,6 +28,11 @@ class Disaster extends Model
         'long',
         'magnitude',
         'depth',
+        'cancelled_reason',
+        'cancelled_at',
+        'cancelled_by',
+        'completed_at',
+        'completed_by',
     ];
 
     protected $casts = [
@@ -40,6 +45,8 @@ class Disaster extends Model
         'long' => 'float',
         'magnitude' => 'float',
         'depth' => 'float',
+        'cancelled_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function reporter()
@@ -70,5 +77,15 @@ class Disaster extends Model
     public function pictures()
     {
         return $this->morphMany(Picture::class, 'foreign_id');
+    }
+
+    public function cancelledBy()
+    {
+        return $this->belongsTo(DisasterVolunteer::class, 'cancelled_by');
+    }
+
+    public function completedBy()
+    {
+        return $this->belongsTo(DisasterVolunteer::class, 'completed_by');
     }
 }

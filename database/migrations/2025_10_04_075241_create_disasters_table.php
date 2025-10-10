@@ -27,6 +27,11 @@ return new class extends Migration
             $table->float('long')->nullable();
             $table->float('magnitude')->nullable();
             $table->float('depth')->nullable();
+            $table->text('cancelled_reason')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->uuid('cancelled_by')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->uuid('completed_by')->nullable();
             $table->timestamps();
         });
     }

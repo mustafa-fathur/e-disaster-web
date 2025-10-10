@@ -214,6 +214,11 @@ class DisasterController extends Controller
                 'magnitude' => $disaster->magnitude,
                 'depth' => $disaster->depth,
                 'reported_by' => $disaster->reported_by,
+                'cancelled_reason' => $disaster->cancelled_reason,
+                'cancelled_at' => $disaster->cancelled_at?->format('Y-m-d H:i:s'),
+                'cancelled_by' => $disaster->cancelled_by,
+                'completed_at' => $disaster->completed_at?->format('Y-m-d H:i:s'),
+                'completed_by' => $disaster->completed_by,
                 'created_at' => $disaster->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $disaster->updated_at->format('Y-m-d H:i:s'),
             ]
@@ -302,6 +307,13 @@ class DisasterController extends Controller
             ], 404);
         }
 
+        // Check if disaster is cancelled or completed - cannot be modified
+        if (in_array($disaster->status, [DisasterStatusEnum::CANCELLED, DisasterStatusEnum::COMPLETED])) {
+            return response()->json([
+                'message' => 'Cannot modify disaster. Disaster is already ' . $disaster->status->value . '.'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|required|string|max:45',
             'description' => 'nullable|string',
@@ -359,9 +371,9 @@ class DisasterController extends Controller
     }
 
     /**
-     * Delete disaster (Officer only)
+     * Cancel disaster (Only for assigned volunteers/officers)
      */
-    public function deleteDisaster(Request $request, $id)
+    public function cancelDisaster(Request $request, $id)
     {
         $disaster = Disaster::find($id);
 
@@ -371,10 +383,53 @@ class DisasterController extends Controller
             ], 404);
         }
 
-        $disaster->delete();
+        // Only ongoing disasters can be cancelled
+        if ($disaster->status !== DisasterStatusEnum::ONGOING) {
+            return response()->json([
+                'message' => 'Only ongoing disasters can be cancelled. Current status: ' . $disaster->status->value
+            ], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'cancelled_reason' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Get the disaster volunteer assignment for this user
+        $user = auth('sanctum')->user();
+        $disasterVolunteer = DisasterVolunteer::where('disaster_id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$disasterVolunteer) {
+            return response()->json([
+                'message' => 'You are not assigned to this disaster.'
+            ], 403);
+        }
+
+        $disaster->update([
+            'status' => DisasterStatusEnum::CANCELLED,
+            'cancelled_reason' => $request->cancelled_reason,
+            'cancelled_at' => now(),
+            'cancelled_by' => $disasterVolunteer->id
+        ]);
 
         return response()->json([
-            'message' => 'Disaster deleted successfully.'
+            'message' => 'Disaster cancelled successfully.',
+            'data' => [
+                'id' => $disaster->id,
+                'title' => $disaster->title,
+                'status' => $disaster->status->value,
+                'cancelled_reason' => $disaster->cancelled_reason,
+                'cancelled_at' => $disaster->cancelled_at->format('Y-m-d H:i:s'),
+                'cancelled_by' => $disasterVolunteer->id
+            ]
         ], 200);
     }
 
