@@ -12,7 +12,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('disaster_id')->nullable()->constrained('disasters')->onDelete('cascade');
             $table->foreignUuid('reported_by')->nullable()->constrained('disaster_volunteers')->onDelete('cascade');
-            $table->string('title', 45)->nullable();
+            $table->string('title', 45);
             $table->text('description')->nullable();
             $table->text('lat')->nullable();
             $table->text('long')->nullable();

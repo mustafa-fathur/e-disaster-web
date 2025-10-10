@@ -4,13 +4,13 @@ namespace App\Enums;
 
 enum DisasterTypeEnum: string
 {
-    case GEMPA_BUMI = 'gempa bumi';
+    case EARTHQUAKE = 'earthquake';
     case TSUNAMI = 'tsunami';
-    case GUNUNG_MELETUS = 'gunung meletus';
-    case BANJIR = 'banjir';
-    case KEKERINGAN = 'kekeringan';
-    case ANGIN_TOPAN = 'angin topan';
-    case TAHAN_LONGSOR = 'tahan longsor';
-    case BENCANA_NON_ALAM = 'bencanan non alam';
-    case BENCANA_SOSIAL = 'bencana sosial';
+    case VOLCANIC_ERUPTION = 'volcanic_eruption';
+    case FLOOD = 'flood';
+    case DROUGHT = 'drought';
+    case TORNADO = 'tornado';
+    case LANDSLIDE = 'landslide';
+    case NON_NATURAL_DISASTER = 'non_natural_disaster';
+    case SOCIAL_DISASTER = 'social_disaster';
 }

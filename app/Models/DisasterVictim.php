@@ -17,13 +17,18 @@ class DisasterVictim extends Model
         'nik',
         'name',
         'date_of_birth',
+        'gender',
+        'contact_info',
         'description',
+        'is_evacuated',
         'status',
     ];
 
     protected $casts = [
         'status' => DisasterVictimStatusEnum::class,
         'date_of_birth' => 'date',
+        'gender' => 'boolean',
+        'is_evacuated' => 'boolean',
     ];
 
     public function disaster()

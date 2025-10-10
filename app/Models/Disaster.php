@@ -35,7 +35,7 @@ class Disaster extends Model
         'types' => DisasterTypeEnum::class,
         'status' => DisasterStatusEnum::class,
         'date' => 'date',
-        'time' => 'datetime:H:i',
+        'time' => 'datetime:H:i:s',
         'lat' => 'float',
         'long' => 'float',
         'magnitude' => 'float',

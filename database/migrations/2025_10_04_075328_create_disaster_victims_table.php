@@ -15,8 +15,11 @@ return new class extends Migration
             $table->string('nik', 45)->nullable();
             $table->string('name', 45)->nullable();
             $table->date('date_of_birth')->nullable();
+            $table->boolean('gender')->nullable();
+            $table->string('contact_info', 100)->nullable();
             $table->text('description')->nullable();
-            $table->enum('status', ['luka ringan', 'luka berat', 'meninggal', 'hilang'])->default('luka ringan');
+            $table->boolean('is_evacuated')->default(false);
+            $table->enum('status', ['minor_injury', 'serious_injuries', 'lost', 'deceased']);
             $table->timestamps();
         });
     }
