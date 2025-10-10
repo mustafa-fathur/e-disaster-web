@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\DisasterReportController;
 use App\Http\Controllers\Api\V1\DisasterVictimController;
 use App\Http\Controllers\Api\V1\DisasterAidController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PictureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,12 @@ Route::prefix('v1')->group(function () {
         // Auth endpoints
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+        
+        // Profile Management
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
+        Route::put('/profile/password', [AuthController::class, 'updatePassword']);
+        Route::post('/profile/picture', [AuthController::class, 'updateProfilePicture']);
+        Route::delete('/profile/picture', [AuthController::class, 'deleteProfilePicture']);
 
         // Dashboard
         Route::get('/dashboard', [DisasterController::class, 'dashboard']);
@@ -48,6 +55,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/notifications/{id}', [NotificationController::class, 'getNotification']);
         Route::put('/notifications/{id}/read', [NotificationController::class, 'markNotificationRead']);
         Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
+
+        // Picture Management (General Access)
+        Route::post('/pictures/{modelType}/{modelId}', [PictureController::class, 'uploadImage']);
+        Route::get('/pictures/{modelType}/{modelId}', [PictureController::class, 'getImages']);
+        Route::get('/pictures/{modelType}/{modelId}/{imageId}', [PictureController::class, 'getImage']);
+        Route::put('/pictures/{modelType}/{modelId}/{imageId}', [PictureController::class, 'updateImage']);
+        Route::delete('/pictures/{modelType}/{modelId}/{imageId}', [PictureController::class, 'deleteImage']);
 
         // Disaster Management (General Access - Read Only)
         Route::get('/disasters', [DisasterController::class, 'index']);

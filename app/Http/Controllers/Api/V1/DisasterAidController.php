@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Disaster;
 use App\Models\DisasterAid;
 use App\Models\DisasterVolunteer;
+use App\Models\Picture;
 use App\Enums\DisasterAidCategoryEnum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -145,6 +146,23 @@ class DisasterAidController extends Controller
             ], 404);
         }
 
+        // Get pictures for this aid
+        $pictures = Picture::where('foreign_id', $aid->id)
+            ->where('type', 'aid')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($picture) {
+                return [
+                    'id' => $picture->id,
+                    'caption' => $picture->caption,
+                    'file_path' => $picture->file_path,
+                    'url' => \Illuminate\Support\Facades\Storage::url($picture->file_path),
+                    'mine_type' => $picture->mine_type,
+                    'alt_text' => $picture->alt_text,
+                    'created_at' => $picture->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
         return response()->json([
             'data' => [
                 'id' => $aid->id,
@@ -157,6 +175,7 @@ class DisasterAidController extends Controller
                 'unit' => $aid->unit,
                 'reported_by' => $aid->reported_by,
                 'reporter_name' => $aid->reporter->user->name ?? 'Unknown',
+                'pictures' => $pictures,
                 'created_at' => $aid->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $aid->updated_at->format('Y-m-d H:i:s'),
             ]

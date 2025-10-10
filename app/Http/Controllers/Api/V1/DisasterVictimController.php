@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Disaster;
 use App\Models\DisasterVictim;
 use App\Models\DisasterVolunteer;
+use App\Models\Picture;
 use App\Enums\DisasterVictimStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -155,6 +156,23 @@ class DisasterVictimController extends Controller
             ], 404);
         }
 
+        // Get pictures for this victim
+        $pictures = Picture::where('foreign_id', $victim->id)
+            ->where('type', 'victim')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($picture) {
+                return [
+                    'id' => $picture->id,
+                    'caption' => $picture->caption,
+                    'file_path' => $picture->file_path,
+                    'url' => \Illuminate\Support\Facades\Storage::url($picture->file_path),
+                    'mine_type' => $picture->mine_type,
+                    'alt_text' => $picture->alt_text,
+                    'created_at' => $picture->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
         return response()->json([
             'data' => [
                 'id' => $victim->id,
@@ -170,6 +188,7 @@ class DisasterVictimController extends Controller
                 'status' => $victim->status->value,
                 'reported_by' => $victim->reported_by,
                 'reporter_name' => $victim->reporter->user->name ?? 'Unknown',
+                'pictures' => $pictures,
                 'created_at' => $victim->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $victim->updated_at->format('Y-m-d H:i:s'),
             ]

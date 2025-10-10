@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Disaster;
 use App\Models\DisasterReport;
 use App\Models\DisasterVolunteer;
+use App\Models\Picture;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -164,6 +165,23 @@ class DisasterReportController extends Controller
             ], 404);
         }
 
+        // Get pictures for this report
+        $pictures = Picture::where('foreign_id', $report->id)
+            ->where('type', 'report')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($picture) {
+                return [
+                    'id' => $picture->id,
+                    'caption' => $picture->caption,
+                    'file_path' => $picture->file_path,
+                    'url' => \Illuminate\Support\Facades\Storage::url($picture->file_path),
+                    'mine_type' => $picture->mine_type,
+                    'alt_text' => $picture->alt_text,
+                    'created_at' => $picture->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
         return response()->json([
             'data' => [
                 'id' => $report->id,
@@ -174,6 +192,7 @@ class DisasterReportController extends Controller
                 'is_final_stage' => $report->is_final_stage,
                 'reported_by' => $report->reported_by,
                 'reporter_name' => $report->reporter->user->name ?? 'Unknown',
+                'pictures' => $pictures,
                 'created_at' => $report->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $report->updated_at->format('Y-m-d H:i:s'),
             ]

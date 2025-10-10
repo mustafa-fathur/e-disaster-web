@@ -9,6 +9,7 @@ use App\Models\DisasterVictim;
 use App\Models\DisasterAid;
 use App\Models\DisasterVolunteer;
 use App\Models\Notification;
+use App\Models\Picture;
 use App\Enums\DisasterTypeEnum;
 use App\Enums\DisasterStatusEnum;
 use App\Enums\DisasterSourceEnum;
@@ -197,6 +198,23 @@ class DisasterController extends Controller
             ], 404);
         }
 
+        // Get pictures for this disaster
+        $pictures = Picture::where('foreign_id', $disaster->id)
+            ->where('type', 'disaster')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($picture) {
+                return [
+                    'id' => $picture->id,
+                    'caption' => $picture->caption,
+                    'file_path' => $picture->file_path,
+                    'url' => \Illuminate\Support\Facades\Storage::url($picture->file_path),
+                    'mine_type' => $picture->mine_type,
+                    'alt_text' => $picture->alt_text,
+                    'created_at' => $picture->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
         return response()->json([
             'data' => [
                 'id' => $disaster->id,
@@ -219,6 +237,7 @@ class DisasterController extends Controller
                 'cancelled_by' => $disaster->cancelled_by,
                 'completed_at' => $disaster->completed_at?->format('Y-m-d H:i:s'),
                 'completed_by' => $disaster->completed_by,
+                'pictures' => $pictures,
                 'created_at' => $disaster->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $disaster->updated_at->format('Y-m-d H:i:s'),
             ]
