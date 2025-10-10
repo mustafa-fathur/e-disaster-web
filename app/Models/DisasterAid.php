@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DisasterAidCategoryEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +16,13 @@ class DisasterAid extends Model
         'reported_by',
         'title',
         'description',
+        'category',
         'quantity',
         'unit',
+    ];
+
+    protected $casts = [
+        'category' => DisasterAidCategoryEnum::class,
     ];
 
     public function disaster()

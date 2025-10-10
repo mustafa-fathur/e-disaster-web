@@ -19,23 +19,31 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('email_verified')->default(false);
             $table->string('password');
             $table->timestamp('password_changed_at')->nullable();
             
-            // Profile fields
-            $table->string('nik', 50)->nullable();
-            $table->string('phone', 50)->nullable();
-            $table->string('address', 255)->nullable();
-
             $table->string('timezone')->nullable();
             $table->timestamp('last_login_at')->nullable();
-            $table->string('location')->nullable();
+            $table->string('location', 45)->nullable();
             $table->text('coordinate')->nullable();
             $table->float('lat')->nullable();
             $table->float('long')->nullable();
-
-            $table->text('rejection_reason')->nullable();
+            
+            // Required profile fields
+            $table->string('nik', 45);
+            $table->string('phone', 45);
+            $table->text('address');
+            $table->boolean('gender');
+            $table->date('date_of_birth');
+            
+            // Optional fields
+            $table->string('reason_to_join', 245)->nullable();
+            $table->timestamp('registered_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->string('approved_by', 45)->nullable();
+            $table->string('rejection_reason', 245)->nullable();
+            $table->string('rejected_by', 45)->nullable();
 
             // Laravel helpers
             $table->rememberToken();

@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum DisasterVictimStatusEnum: string
 {
-    case LUKA_RINGAN = 'luka ringan';
-    case LUKA_BERAT = 'luka berat';
-    case MENINGGAL = 'meninggal';
-    case HILANG = 'hilang';
+    case MINOR_INJURY = 'minor_injury';
+    case SERIOUS_INJURIES = 'serious_injuries';
+    case LOST = 'lost';
+    case DECEASED = 'deceased';
 }

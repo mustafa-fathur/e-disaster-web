@@ -11,9 +11,15 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->string('title', 45)->nullable();
-            $table->string('message', 50)->nullable();
-            $table->timestamps();   
+            $table->string('title', 45);
+            $table->text('message');
+            $table->enum('category', [
+                'volunteer_verification', 'new_disaster', 'new_disaster_report',
+                'new_disaster_victim_report', 'new_disaster_aid_report', 'disaster_status_changed'
+            ]);
+            $table->boolean('is_read')->default(false);
+            $table->timestamp('sent_at');
+            $table->timestamps();
         });
     }
 

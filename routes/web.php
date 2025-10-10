@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DisasterController;
 
 // Public
 Route::get('/', function () {
@@ -34,35 +36,37 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 });
 
+
+
 // Admin-only area (no URL prefix; guarded by middleware)
 Route::middleware(['auth', 'active', 'admin'])->group(function () {
     // Admin Dashboard (also accessible via unified /dashboard)
-    Route::get('/admin-dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])
+    Route::get('/admin-dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard.alt');
 
     // User Management
-    Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
-    Route::patch('/users/{user}/status', [App\Http\Controllers\AdminController::class, 'updateUserStatus'])->name('admin.users.status');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::patch('/users/{user}/status', [AdminController::class, 'updateUserStatus'])->name('admin.users.status');
 
     // Volunteer Management
-    Route::get('/volunteers', [App\Http\Controllers\AdminController::class, 'volunteers'])->name('admin.volunteers');
-    Route::patch('/volunteers/{user}/approve', [App\Http\Controllers\AdminController::class, 'approveVolunteer'])->name('admin.volunteers.approve');
-    Route::patch('/volunteers/{user}/reject', [App\Http\Controllers\AdminController::class, 'rejectVolunteer'])->name('admin.volunteers.reject');
+    Route::get('/volunteers', [AdminController::class, 'volunteers'])->name('admin.volunteers');
+    Route::patch('/volunteers/{user}/approve', [AdminController::class, 'approveVolunteer'])->name('admin.volunteers.approve');
+    Route::patch('/volunteers/{user}/reject', [AdminController::class, 'rejectVolunteer'])->name('admin.volunteers.reject');
 
     // Officer Management (forms handled via modals on index)
-    Route::get('/officers', [App\Http\Controllers\AdminController::class, 'officers'])->name('admin.officers');
-    Route::post('/officers', [App\Http\Controllers\AdminController::class, 'storeOfficer'])->name('admin.officers.store');
-    Route::patch('/officers/{user}', [App\Http\Controllers\AdminController::class, 'updateOfficer'])->name('admin.officers.update');
-    Route::delete('/officers/{user}', [App\Http\Controllers\AdminController::class, 'destroyOfficer'])->name('admin.officers.destroy');
+    Route::get('/officers', [AdminController::class, 'officers'])->name('admin.officers');
+    Route::post('/officers', [AdminController::class, 'storeOfficer'])->name('admin.officers.store');
+    Route::patch('/officers/{user}', [AdminController::class, 'updateOfficer'])->name('admin.officers.update');
+    Route::delete('/officers/{user}', [AdminController::class, 'destroyOfficer'])->name('admin.officers.destroy');
     
     // Disasters
-    Route::get('/disasters', [App\Http\Controllers\DisasterController::class, 'index'])->name('admin.disasters');
-    Route::get('/disasters/create', [App\Http\Controllers\DisasterController::class, 'create'])->name('admin.disasters.create');
-    Route::post('/disasters', [App\Http\Controllers\DisasterController::class, 'store'])->name('admin.disasters.store');
-    Route::get('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'show'])->name('admin.disasters.show');
-    Route::get('/disasters/{disaster}/edit', [App\Http\Controllers\DisasterController::class, 'edit'])->name('admin.disasters.edit');
-    Route::patch('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'update'])->name('admin.disasters.update');
-    Route::delete('/disasters/{disaster}', [App\Http\Controllers\DisasterController::class, 'destroy'])->name('admin.disasters.destroy');
+    Route::get('/disasters', [DisasterController::class, 'index'])->name('admin.disasters');
+    Route::get('/disasters/create', [DisasterController::class, 'create'])->name('admin.disasters.create');
+    Route::post('/disasters', [DisasterController::class, 'store'])->name('admin.disasters.store');
+    Route::get('/disasters/{disaster}', [DisasterController::class, 'show'])->name('admin.disasters.show');
+    Route::get('/disasters/{disaster}/edit', [DisasterController::class, 'edit'])->name('admin.disasters.edit');
+    Route::patch('/disasters/{disaster}', [DisasterController::class, 'update'])->name('admin.disasters.update');
+    Route::delete('/disasters/{disaster}', [DisasterController::class, 'destroy'])->name('admin.disasters.destroy');
 });
 
 // Diagnostic test routes (temporary)

@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum DisasterSourceEnum: string
 {
-    case BMKG = 'BMKG';
+    case BMKG = 'bmkg';
     case MANUAL = 'manual';
 }

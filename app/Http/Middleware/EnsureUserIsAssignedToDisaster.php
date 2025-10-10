@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\UserStatusEnum;
-use App\Enums\UserTypeEnum;
+use App\Models\DisasterVolunteer;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserCanAccessAPI
+class EnsureUserIsAssignedToDisaster
 {
     /**
      * Handle an incoming request.
@@ -24,18 +23,22 @@ class EnsureUserCanAccessAPI
         }
 
         $user = auth('sanctum')->user();
+        $disasterId = $request->route('id');
 
-        // Check if user is active
-        if ($user->status !== UserStatusEnum::ACTIVE) {
+        if (!$disasterId) {
             return response()->json([
-                'message' => 'Your account is not active. Please contact an administrator.'
-            ], 403);
+                'message' => 'Disaster ID is required.'
+            ], 400);
         }
 
-        // Only officers and volunteers can access API (admin is web-only)
-        if (!in_array($user->type, [UserTypeEnum::OFFICER, UserTypeEnum::VOLUNTEER])) {
+        // Check if user is assigned to this disaster
+        $isAssigned = DisasterVolunteer::where('disaster_id', $disasterId)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if (!$isAssigned) {
             return response()->json([
-                'message' => 'Access denied. API access is restricted to officers and volunteers only.'
+                'message' => 'Access denied. You are not assigned to this disaster.'
             ], 403);
         }
 

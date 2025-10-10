@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'status' => UserStatusEnum::REGISTERED,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'email_verified' => true,
             'password' => static::$password ??= Hash::make('password'),
             'timezone' => fake()->timezone(),
             'last_login_at' => fake()->optional(0.7)->dateTimeBetween('-30 days', 'now'),
@@ -38,6 +38,13 @@ class UserFactory extends Factory
             'coordinate' => fake()->optional(0.6)->latitude() . ',' . fake()->optional(0.6)->longitude(),
             'lat' => fake()->optional(0.6)->latitude(),
             'long' => fake()->optional(0.6)->longitude(),
+            'nik' => fake()->numerify('################'),
+            'phone' => fake()->phoneNumber(),
+            'address' => fake()->address(),
+            'gender' => fake()->boolean(),
+            'date_of_birth' => fake()->date('Y-m-d', '2000-01-01'),
+            'reason_to_join' => fake()->optional(0.8)->sentence(),
+            'registered_at' => fake()->optional(0.9)->dateTimeBetween('-60 days', 'now'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -48,7 +55,7 @@ class UserFactory extends Factory
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'email_verified' => false,
         ]);
     }
 
@@ -60,7 +67,7 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => UserTypeEnum::ADMIN,
             'status' => UserStatusEnum::ACTIVE,
-            'email_verified_at' => now(),
+            'email_verified' => true,
         ]);
     }
 
@@ -72,7 +79,7 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => UserTypeEnum::OFFICER,
             'status' => UserStatusEnum::ACTIVE,
-            'email_verified_at' => now(),
+            'email_verified' => true,
         ]);
     }
 
@@ -95,7 +102,7 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => UserTypeEnum::VOLUNTEER,
             'status' => UserStatusEnum::ACTIVE,
-            'email_verified_at' => now(),
+            'email_verified' => true,
         ]);
     }
 

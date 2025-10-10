@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('pictures', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('foreign_id')->nullable();
-            $table->enum('type', ['profile', 'disaster', 'report', 'victim', 'aid']);
-            $table->string('caption', 45)->nullable();
-            $table->string('file_path', 255)->nullable();
-            $table->string('mine_type', 100)->nullable();
-            $table->string('alt_text', 100)->nullable();
+            $table->uuid('foreign_id');
+            $table->enum('type', ['profile', 'disaster', 'disaster_report', 'disaster_victim', 'disaster_aid']);
+            $table->string('caption')->nullable();
+            $table->string('file_path', 255);
+            $table->string('mine_type', 50)->nullable();
+            $table->string('alt_text')->nullable();
             $table->timestamps();
         });
     }

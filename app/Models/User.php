@@ -12,11 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasUuids, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+    use HasFactory, HasUuids, Notifiable, SoftDeletes, TwoFactorAuthenticatable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +29,7 @@ class User extends Authenticatable
         'status',
         'name',
         'email',
+        'email_verified',
         'password',
         'password_changed_at',
         'timezone',
@@ -39,7 +41,14 @@ class User extends Authenticatable
         'nik',
         'phone',
         'address',
+        'gender',
+        'date_of_birth',
+        'reason_to_join',
+        'registered_at',
+        'approved_at',
+        'approved_by',
         'rejection_reason',
+        'rejected_by',
     ];
 
     /**
@@ -62,10 +71,14 @@ class User extends Authenticatable
         return [
             'type' => UserTypeEnum::class,
             'status' => UserStatusEnum::class,
-            'email_verified_at' => 'datetime',
+            'email_verified' => 'boolean',
             'password' => 'hashed',
             'password_changed_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'date_of_birth' => 'date',
+            'registered_at' => 'datetime',
+            'approved_at' => 'datetime',
+            'gender' => 'boolean',
             'lat' => 'float',
             'long' => 'float'
         ];

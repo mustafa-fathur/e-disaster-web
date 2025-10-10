@@ -11,22 +11,27 @@ return new class extends Migration
         Schema::create('disasters', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('reported_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('source', ['bmkg', 'manual'])->default('bmkg');
+            $table->enum('types', [
+                'earthquake', 'tsunami', 'volcanic_eruption', 'flood', 'drought',
+                'tornado', 'landslide', 'non_natural_disaster', 'social_disaster'
+            ]);
+            $table->enum('status', ['cancelled', 'ongoing', 'completed'])->default('ongoing');
             $table->string('title', 45);
             $table->text('description')->nullable();
-            $table->enum('source', ['BMKG', 'manual'])->default('BMKG');
-            $table->enum('types', [
-                'gempa bumi', 'tsunami', 'gunung meletus', 'banjir', 'kekeringan',
-                'angin topan', 'tahan longsor', 'bencanan non alam', 'bencana sosial'
-            ]);
-            $table->enum('status', ['ongoing', 'completed'])->default('ongoing');
-            $table->date('date')->nullable();
-            $table->time('time')->nullable();
+            $table->date('date');
+            $table->time('time');
             $table->string('location', 45)->nullable();
             $table->text('coordinate')->nullable();
             $table->float('lat')->nullable();
             $table->float('long')->nullable();
             $table->float('magnitude')->nullable();
             $table->float('depth')->nullable();
+            $table->text('cancelled_reason')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->uuid('cancelled_by')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->uuid('completed_by')->nullable();
             $table->timestamps();
         });
     }

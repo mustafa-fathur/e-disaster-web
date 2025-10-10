@@ -17,6 +17,11 @@ class EnsureUserIsActive
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth()->check()) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Unauthenticated.'
+                ], 401);
+            }
             return redirect()->route('login');
         }
 
@@ -24,6 +29,12 @@ class EnsureUserIsActive
 
         if ($user->status !== UserStatusEnum::ACTIVE) {
             auth()->logout();
+            
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Your account is not active. Please contact an administrator.'
+                ], 403);
+            }
             
             return redirect()->route('login')->withErrors([
                 'status' => 'Your account is not active. Please contact an administrator.'
