@@ -17,7 +17,7 @@ Route::prefix('v1')->group(function () {
 
     // Healthcheck
     Route::get('/health', function () {
-        return response()->json(['status' => 'ok']);
+        return response()->json(['status' => 'aman']);
     });
 
     // Public Auth Endpoints
@@ -41,12 +41,10 @@ Route::prefix('v1')->group(function () {
         Route::put('/notifications/{id}/read', [DisasterController::class, 'markNotificationRead']);
         Route::put('/notifications/read-all', [DisasterController::class, 'markAllNotificationsRead']);
 
-        // Disaster Management (General Access)
+        // Disaster Management (General Access - Read Only)
         Route::get('/disasters', [DisasterController::class, 'index']);
         Route::get('/disasters/{id}', [DisasterController::class, 'show']);
         Route::post('/disasters', [DisasterController::class, 'createDisaster']);
-        Route::put('/disasters/{id}', [DisasterController::class, 'updateDisaster']);
-        Route::delete('/disasters/{id}', [DisasterController::class, 'deleteDisaster']);
 
         // Disaster Volunteer Management (General Access)
         Route::get('/disasters/{id}/volunteers', [DisasterController::class, 'getDisasterVolunteers']);
@@ -58,6 +56,10 @@ Route::prefix('v1')->group(function () {
     // Disaster-Assigned Endpoints (Officer/Volunteer assigned to specific disaster)
     Route::middleware(['api_access', 'disaster_assigned'])->group(function () {
         
+        // Disaster Management (Only for assigned volunteers/officers)
+        Route::put('/disasters/{id}', [DisasterController::class, 'updateDisaster']);
+        Route::delete('/disasters/{id}', [DisasterController::class, 'deleteDisaster']);
+
         // Disaster Reports (Only for assigned volunteers/officers)
         Route::get('/disasters/{id}/reports', [DisasterController::class, 'getDisasterReports']);
         Route::post('/disasters/{id}/reports', [DisasterController::class, 'createDisasterReport']);
