@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\DisasterController;
 use App\Http\Controllers\Api\V1\DisasterReportController;
 use App\Http\Controllers\Api\V1\DisasterVictimController;
 use App\Http\Controllers\Api\V1\DisasterAidController;
+use App\Http\Controllers\Api\V1\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,9 +41,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard', [DisasterController::class, 'dashboard']);
 
         // Notifications
-        Route::get('/notifications', [DisasterController::class, 'notifications']);
-        Route::put('/notifications/{id}/read', [DisasterController::class, 'markNotificationRead']);
-        Route::put('/notifications/read-all', [DisasterController::class, 'markAllNotificationsRead']);
+        Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+        Route::get('/notifications/stats', [NotificationController::class, 'getNotificationStats']);
+        Route::put('/notifications/read-all', [NotificationController::class, 'markAllNotificationsRead']);
+        Route::delete('/notifications/read-all', [NotificationController::class, 'deleteAllReadNotifications']);
+        Route::get('/notifications/{id}', [NotificationController::class, 'getNotification']);
+        Route::put('/notifications/{id}/read', [NotificationController::class, 'markNotificationRead']);
+        Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
 
         // Disaster Management (General Access - Read Only)
         Route::get('/disasters', [DisasterController::class, 'index']);

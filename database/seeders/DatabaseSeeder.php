@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             DisasterSeeder::class,
             DisasterVolunteerSeeder::class,
             DisasterReportSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }
