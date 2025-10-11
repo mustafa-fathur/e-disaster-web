@@ -13,7 +13,63 @@ use Illuminate\Support\Facades\Validator;
 class DisasterReportController extends Controller
 {
     /**
-     * Get all reports for a specific disaster
+     * @OA\Get(
+     *     path="/disasters/{id}/reports",
+     *     summary="Get disaster reports",
+     *     description="Get paginated list of reports for a specific disaster (assigned users only)",
+     *     tags={"Reports"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term for title or description",
+     *         required=false,
+     *         @OA\Schema(type="string", example="damage")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reports retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Disaster not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     )
+     * )
      */
     public function getDisasterReports(Request $request, $id)
     {
@@ -73,6 +129,54 @@ class DisasterReportController extends Controller
 
     /**
      * Create new disaster report
+     */
+    /**
+     * @OA\Post(
+     *     path="/disasters/{id}/reports",
+     *     summary="Create disaster report",
+     *     description="Create a new report for a specific disaster (assigned users only)",
+     *     tags={"Reports"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title","description"},
+     *             @OA\Property(property="title", type="string", example="Damage Assessment Report"),
+     *             @OA\Property(property="description", type="string", example="Detailed report on building damage and casualties"),
+     *             @OA\Property(property="is_final_stage", type="boolean", example=false, description="Mark as final stage (completes disaster)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Report created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report created successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function createDisasterReport(Request $request, $id)
     {
@@ -144,6 +248,58 @@ class DisasterReportController extends Controller
     /**
      * Get specific disaster report
      */
+    /**
+     * @OA\Get(
+     *     path="/disasters/{id}/reports/{reportId}",
+     *     summary="Get disaster report details",
+     *     description="Get detailed information about a specific disaster report (assigned users only)",
+     *     tags={"Reports"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="reportId",
+     *         in="path",
+     *         description="Report ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Report details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="title", type="string"),
+     *                 @OA\Property(property="description", type="string"),
+     *                 @OA\Property(property="is_final_stage", type="boolean"),
+     *                 @OA\Property(property="pictures", type="array", @OA\Items(type="object")),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Report not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report not found.")
+     *         )
+     *     )
+     * )
+     */
     public function getDisasterReport(Request $request, $id, $reportId)
     {
         $disaster = Disaster::find($id);
@@ -201,6 +357,59 @@ class DisasterReportController extends Controller
 
     /**
      * Update disaster report
+     */
+    /**
+     * @OA\Put(
+     *     path="/disasters/{id}/reports/{reportId}",
+     *     summary="Update disaster report",
+     *     description="Update a specific disaster report (assigned users only)",
+     *     tags={"Reports"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="reportId",
+     *         in="path",
+     *         description="Report ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string", example="Updated Damage Assessment Report"),
+     *             @OA\Property(property="description", type="string", example="Updated detailed report on building damage and casualties"),
+     *             @OA\Property(property="is_final_stage", type="boolean", example=true, description="Mark as final stage (completes disaster)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Report updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report updated successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Report not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report not found.")
+     *         )
+     *     )
+     * )
      */
     public function updateDisasterReport(Request $request, $id, $reportId)
     {
@@ -274,6 +483,50 @@ class DisasterReportController extends Controller
 
     /**
      * Delete disaster report
+     */
+    /**
+     * @OA\Delete(
+     *     path="/disasters/{id}/reports/{reportId}",
+     *     summary="Delete disaster report",
+     *     description="Delete a specific disaster report (assigned users only)",
+     *     tags={"Reports"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="reportId",
+     *         in="path",
+     *         description="Report ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Report deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report deleted successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Report not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster report not found.")
+     *         )
+     *     )
+     * )
      */
     public function deleteDisasterReport(Request $request, $id, $reportId)
     {

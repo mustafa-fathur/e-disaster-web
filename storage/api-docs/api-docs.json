@@ -1,0 +1,4290 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "e-Disaster API",
+        "description": "Disaster Management System API for Mobile Applications",
+        "contact": {
+            "email": "admin@edisaster.test"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "Development Server"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "User login",
+                "description": "Authenticate user and return access token",
+                "operationId": "985cd5203e2d0a820e113f2f4fdb2847",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "fathur@edisaster.test"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6,
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Fathur"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "fathur@edisaster.test"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "officer"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "active"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|QLeddZ0IkK8cMP1ARfjPnpRpIbuhiMHGIlufQspye1556327"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account not active",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account is not active. Please contact administrator."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "User registration",
+                "description": "Register a new volunteer user (requires admin approval)",
+                "operationId": "8f20688904ee49d0d8739eeb08faf0b1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "nik",
+                                    "phone",
+                                    "address",
+                                    "gender",
+                                    "date_of_birth"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "nik": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+6281234567890"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Jl. Example No. 123"
+                                    },
+                                    "gender": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    },
+                                    "reason_to_join": {
+                                        "type": "string",
+                                        "example": "Want to help disaster victims"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registration successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registration successful. Please wait for admin approval."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "volunteer"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "registered"
+                                                },
+                                                "nik": {
+                                                    "type": "string"
+                                                },
+                                                "phone": {
+                                                    "type": "string"
+                                                },
+                                                "address": {
+                                                    "type": "string"
+                                                },
+                                                "gender": {
+                                                    "type": "boolean"
+                                                },
+                                                "date_of_birth": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "User logout",
+                "description": "Logout user and invalidate access token",
+                "operationId": "a05022a34eef599e04fb0a5254375b84",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": ["Authentication"],
+                "summary": "Get current user profile",
+                "description": "Get authenticated user's profile information including profile picture",
+                "operationId": "0fadd24761c66bfa1bfdc46dea94c0dd",
+                "responses": {
+                    "200": {
+                        "description": "User profile retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "email_verified": {
+                                                    "type": "boolean"
+                                                },
+                                                "nik": {
+                                                    "type": "string"
+                                                },
+                                                "phone": {
+                                                    "type": "string"
+                                                },
+                                                "address": {
+                                                    "type": "string"
+                                                },
+                                                "gender": {
+                                                    "type": "boolean"
+                                                },
+                                                "date_of_birth": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "reason_to_join": {
+                                                    "type": "string"
+                                                },
+                                                "registered_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "approved_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "timezone": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "lat": {
+                                                    "type": "number"
+                                                },
+                                                "long": {
+                                                    "type": "number"
+                                                },
+                                                "profile_picture": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "url": {
+                                                            "type": "string"
+                                                        },
+                                                        "caption": {
+                                                            "type": "string"
+                                                        },
+                                                        "alt_text": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile": {
+            "put": {
+                "tags": ["Authentication"],
+                "summary": "Update user profile",
+                "description": "Update authenticated user's profile information",
+                "operationId": "34a95a43fbe3c1867c0643d65ac43b36",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "nik": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+6281234567890"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Jl. Example No. 123"
+                                    },
+                                    "gender": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    },
+                                    "reason_to_join": {
+                                        "type": "string",
+                                        "example": "Want to help disaster victims"
+                                    },
+                                    "timezone": {
+                                        "type": "string",
+                                        "example": "Asia/Jakarta"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile updated successfully"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/password": {
+            "put": {
+                "tags": ["Authentication"],
+                "summary": "Update user password",
+                "description": "Change authenticated user's password",
+                "operationId": "5bec6de36c7f928fdceb15e31c3b17bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "oldpassword"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed or incorrect current password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Current password is incorrect"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile/picture": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Upload profile picture",
+                "description": "Upload or update user's profile picture",
+                "operationId": "11825358503a72160457ea05afbb597c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": ["image"],
+                                "properties": {
+                                    "image": {
+                                        "description": "Image file (max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "caption": {
+                                        "type": "string",
+                                        "example": "My profile picture"
+                                    },
+                                    "alt_text": {
+                                        "type": "string",
+                                        "example": "Profile photo of John Doe"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile picture updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile picture updated successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "caption": {
+                                                    "type": "string"
+                                                },
+                                                "alt_text": {
+                                                    "type": "string"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Authentication"],
+                "summary": "Delete profile picture",
+                "description": "Delete user's profile picture",
+                "operationId": "6819b1cea225a934624830a98feddde2",
+                "responses": {
+                    "200": {
+                        "description": "Profile picture deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile picture deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile picture not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile picture not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/aids": {
+            "get": {
+                "tags": ["Aids"],
+                "summary": "Get disaster aids",
+                "description": "Get paginated list of aids for a specific disaster (assigned users only)",
+                "operationId": "75a3354e963edc3f426bc3e84dabddc0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "food"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter by aid category",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "makanan",
+                                "obat",
+                                "pakaian",
+                                "shelter",
+                                "transportasi",
+                                "lainnya"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aids retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Aids"],
+                "summary": "Create disaster aid record",
+                "description": "Create a new aid record for a specific disaster (assigned users only)",
+                "operationId": "b55685db0bb06b0b57a79913aa985712",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["name", "category", "quantity"],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Emergency Food Pack"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "enum": [
+                                            "makanan",
+                                            "obat",
+                                            "pakaian",
+                                            "shelter",
+                                            "transportasi",
+                                            "lainnya"
+                                        ],
+                                        "example": "makanan"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Ready-to-eat meals for disaster victims"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Distribution Center A"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Aid record created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid created successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/aids/{aidId}": {
+            "get": {
+                "tags": ["Aids"],
+                "summary": "Get disaster aid details",
+                "description": "Get detailed information about a specific disaster aid (assigned users only)",
+                "operationId": "75913fa52c2bb949188d9b841186b9b3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "aidId",
+                        "in": "path",
+                        "description": "Aid ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aid details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "category": {
+                                                    "type": "string"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "lat": {
+                                                    "type": "number"
+                                                },
+                                                "long": {
+                                                    "type": "number"
+                                                },
+                                                "pictures": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Aid not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Aids"],
+                "summary": "Update disaster aid record",
+                "description": "Update a specific disaster aid record (assigned users only)",
+                "operationId": "be845c2b257e5893bb529c083d73cefc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "aidId",
+                        "in": "path",
+                        "description": "Aid ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Emergency Food Pack"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "enum": [
+                                            "makanan",
+                                            "obat",
+                                            "pakaian",
+                                            "shelter",
+                                            "transportasi",
+                                            "lainnya"
+                                        ],
+                                        "example": "makanan"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated ready-to-eat meals for disaster victims"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Updated Distribution Center A"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Aid record updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid updated successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Aid not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Aids"],
+                "summary": "Delete disaster aid record",
+                "description": "Delete a specific disaster aid record (assigned users only)",
+                "operationId": "d0a345a135da8ec24da757aeaea7a250",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "aidId",
+                        "in": "path",
+                        "description": "Aid ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aid record deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Aid not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster aid not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dashboard": {
+            "get": {
+                "tags": ["Disasters"],
+                "summary": "Get dashboard data",
+                "description": "Get dashboard statistics and data for authenticated user",
+                "operationId": "08d251d02237747cd46fdf162afc42de",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "assigned_disasters": {
+                                            "type": "integer"
+                                        },
+                                        "total_reports": {
+                                            "type": "integer"
+                                        },
+                                        "total_victims": {
+                                            "type": "integer"
+                                        },
+                                        "total_aids": {
+                                            "type": "integer"
+                                        },
+                                        "recent_disasters": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "recent_reports": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters": {
+            "get": {
+                "tags": ["Disasters"],
+                "summary": "List all disasters",
+                "description": "Get paginated list of all disasters with optional filtering",
+                "operationId": "69e3053dbb623a0dda47763d0694fa5a",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for title or location",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "earthquake"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by disaster status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": ["ongoing", "completed", "cancelled"],
+                            "example": "ongoing"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by disaster type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "gempa bumi"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Disasters retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Disasters"],
+                "summary": "Create new disaster",
+                "description": "Create a new disaster and automatically assign creator as volunteer",
+                "operationId": "2a097c5e8b8502d04ded37d93355b64d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["title", "type", "location"],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Earthquake in Jakarta"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Strong earthquake felt in Jakarta area"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "gempa bumi",
+                                            "tsunami",
+                                            "gunung meletus",
+                                            "banjir",
+                                            "kekeringan",
+                                            "angin topan",
+                                            "tahan longsor",
+                                            "bencana non alam",
+                                            "bencana sosial"
+                                        ],
+                                        "example": "gempa bumi"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "enum": ["BMKG", "manual"],
+                                        "example": "BMKG"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Jakarta, Indonesia"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    },
+                                    "magnitude": {
+                                        "type": "number",
+                                        "example": 6.5
+                                    },
+                                    "depth": {
+                                        "type": "number",
+                                        "example": 10.5
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-15"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "example": "14:30:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Disaster created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}": {
+            "get": {
+                "tags": ["Disasters"],
+                "summary": "Get disaster details",
+                "description": "Get detailed information about a specific disaster including volunteers and pictures",
+                "operationId": "a84c8b316c8af09a45a239184f35e636",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Disaster details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "source": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "lat": {
+                                                    "type": "number"
+                                                },
+                                                "long": {
+                                                    "type": "number"
+                                                },
+                                                "magnitude": {
+                                                    "type": "number"
+                                                },
+                                                "depth": {
+                                                    "type": "number"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "time": {
+                                                    "type": "string"
+                                                },
+                                                "cancelled_reason": {
+                                                    "type": "string"
+                                                },
+                                                "cancelled_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "completed_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "pictures": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Disasters"],
+                "summary": "Update disaster",
+                "description": "Update a specific disaster (assigned users only)",
+                "operationId": "b5766b148146f82657da029b6b0b2d0d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Earthquake in Jakarta"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated strong earthquake felt in Jakarta area"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "gempa bumi",
+                                            "tsunami",
+                                            "gunung meletus",
+                                            "banjir",
+                                            "kekeringan",
+                                            "angin topan",
+                                            "tahan longsor",
+                                            "bencana non alam",
+                                            "bencana sosial"
+                                        ],
+                                        "example": "gempa bumi"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "enum": ["BMKG", "manual"],
+                                        "example": "BMKG"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Jakarta, Indonesia"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    },
+                                    "magnitude": {
+                                        "type": "number",
+                                        "example": 6.5
+                                    },
+                                    "depth": {
+                                        "type": "number",
+                                        "example": 10.5
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-15"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "example": "14:30:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Disaster updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster updated successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied or disaster cannot be modified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/cancel": {
+            "put": {
+                "tags": ["Disasters"],
+                "summary": "Cancel disaster",
+                "description": "Cancel a specific disaster with reason (assigned users only)",
+                "operationId": "a9f6381de5ed1d6eb8002bfabd003469",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["cancelled_reason"],
+                                "properties": {
+                                    "cancelled_reason": {
+                                        "description": "Reason for cancelling the disaster",
+                                        "type": "string",
+                                        "example": "False alarm - no actual disaster occurred"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Disaster cancelled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster cancelled successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Disaster cannot be cancelled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Only ongoing disasters can be cancelled."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/reports": {
+            "get": {
+                "tags": ["Reports"],
+                "summary": "Get disaster reports",
+                "description": "Get paginated list of reports for a specific disaster (assigned users only)",
+                "operationId": "2763be38f854d317c94e1da4fb2261c0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for title or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "damage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reports retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Reports"],
+                "summary": "Create disaster report",
+                "description": "Create a new report for a specific disaster (assigned users only)",
+                "operationId": "d5a72fe7a1ee8880d9d3d3f8267acb78",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["title", "description"],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Damage Assessment Report"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Detailed report on building damage and casualties"
+                                    },
+                                    "is_final_stage": {
+                                        "description": "Mark as final stage (completes disaster)",
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Report created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report created successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/reports/{reportId}": {
+            "get": {
+                "tags": ["Reports"],
+                "summary": "Get disaster report details",
+                "description": "Get detailed information about a specific disaster report (assigned users only)",
+                "operationId": "5351b4a252d60c60976a39c7b76d34fe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "description": "Report ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "is_final_stage": {
+                                                    "type": "boolean"
+                                                },
+                                                "pictures": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Reports"],
+                "summary": "Update disaster report",
+                "description": "Update a specific disaster report (assigned users only)",
+                "operationId": "8dd4b3992dea2614d707d50ef8651206",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "description": "Report ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Damage Assessment Report"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated detailed report on building damage and casualties"
+                                    },
+                                    "is_final_stage": {
+                                        "description": "Mark as final stage (completes disaster)",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Report updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report updated successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Reports"],
+                "summary": "Delete disaster report",
+                "description": "Delete a specific disaster report (assigned users only)",
+                "operationId": "c68a2f7c25f24dbb84f305c38d8c9d44",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "description": "Report ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster report not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/victims": {
+            "get": {
+                "tags": ["Victims"],
+                "summary": "Get disaster victims",
+                "description": "Get paginated list of victims for a specific disaster (assigned users only)",
+                "operationId": "87a7083869906261b0585c6881f50c54",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by victim status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "luka ringan",
+                                "luka berat",
+                                "meninggal",
+                                "hilang"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Victims retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Disaster not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Victims"],
+                "summary": "Create disaster victim record",
+                "description": "Create a new victim record for a specific disaster (assigned users only)",
+                "operationId": "0ac8fafa70fb48967163cc6b8e949e9e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["name", "status"],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "age": {
+                                        "type": "integer",
+                                        "example": 35
+                                    },
+                                    "gender": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "luka ringan",
+                                            "luka berat",
+                                            "meninggal",
+                                            "hilang"
+                                        ],
+                                        "example": "luka ringan"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Victim found trapped under debris"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Building A, Floor 2"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Victim record created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim created successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/disasters/{id}/victims/{victimId}": {
+            "get": {
+                "tags": ["Victims"],
+                "summary": "Get disaster victim details",
+                "description": "Get detailed information about a specific disaster victim (assigned users only)",
+                "operationId": "a71f160bf4ecb35bafb9847cd063c124",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "victimId",
+                        "in": "path",
+                        "description": "Victim ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Victim details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "age": {
+                                                    "type": "integer"
+                                                },
+                                                "gender": {
+                                                    "type": "boolean"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "location": {
+                                                    "type": "string"
+                                                },
+                                                "lat": {
+                                                    "type": "number"
+                                                },
+                                                "long": {
+                                                    "type": "number"
+                                                },
+                                                "pictures": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Victim not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Victims"],
+                "summary": "Update disaster victim record",
+                "description": "Update a specific disaster victim record (assigned users only)",
+                "operationId": "8f44cea81e44d15bb2a62f0ad3cfb83f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "victimId",
+                        "in": "path",
+                        "description": "Victim ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe Updated"
+                                    },
+                                    "age": {
+                                        "type": "integer",
+                                        "example": 36
+                                    },
+                                    "gender": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "luka ringan",
+                                            "luka berat",
+                                            "meninggal",
+                                            "hilang"
+                                        ],
+                                        "example": "luka berat"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated victim status - now in stable condition"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "Hospital A, Room 205"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "example": -6.2088
+                                    },
+                                    "long": {
+                                        "type": "number",
+                                        "example": 106.8456
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Victim record updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim updated successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Victim not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Victims"],
+                "summary": "Delete disaster victim record",
+                "description": "Delete a specific disaster victim record (assigned users only)",
+                "operationId": "25f18550ea5f0d6ecce76e3922d961dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Disaster ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "victimId",
+                        "in": "path",
+                        "description": "Victim ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Victim record deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied - not assigned to disaster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access denied. You are not assigned to this disaster."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Victim not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster victim not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications": {
+            "get": {
+                "tags": ["Notifications"],
+                "summary": "Get user notifications",
+                "description": "Get paginated list of notifications for authenticated user",
+                "operationId": "7564b1fb0922578d7b397a52738ab77a",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for title or message",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "disaster"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter by notification category",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "volunteer_verification",
+                                "new_disaster",
+                                "new_disaster_report",
+                                "new_disaster_victim_report",
+                                "new_disaster_aid_report",
+                                "disaster_status_changed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "is_read",
+                        "in": "query",
+                        "description": "Filter by read status",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notifications retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications/{id}": {
+            "get": {
+                "tags": ["Notifications"],
+                "summary": "Get notification details",
+                "description": "Get detailed information about a specific notification",
+                "operationId": "7b9656046d9293e26ea9aba4388a2593",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Notification ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "user_id": {
+                                                    "type": "string"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "category": {
+                                                    "type": "string"
+                                                },
+                                                "is_read": {
+                                                    "type": "boolean"
+                                                },
+                                                "sent_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Notifications"],
+                "summary": "Delete notification",
+                "description": "Delete a specific notification",
+                "operationId": "3cce51a2665aa79e1922a943541a83d6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Notification ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications/{id}/read": {
+            "put": {
+                "tags": ["Notifications"],
+                "summary": "Mark notification as read",
+                "description": "Mark a specific notification as read",
+                "operationId": "9bfd9d36a40cd2022d074da8b540f28d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Notification ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notification marked as read",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification marked as read."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "is_read": {
+                                                    "type": "boolean"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notification not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notification not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications/read-all": {
+            "put": {
+                "tags": ["Notifications"],
+                "summary": "Mark all notifications as read",
+                "description": "Mark all user notifications as read",
+                "operationId": "cc9d2dda202d5472b375ce8f2a274899",
+                "responses": {
+                    "200": {
+                        "description": "All notifications marked as read",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Marked 5 notifications as read."
+                                        },
+                                        "updated_count": {
+                                            "type": "integer",
+                                            "example": 5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Notifications"],
+                "summary": "Delete all read notifications",
+                "description": "Delete all read notifications for the authenticated user",
+                "operationId": "dc2a2ce4aa020d86fb902b4b23997380",
+                "responses": {
+                    "200": {
+                        "description": "Read notifications deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted 15 read notifications."
+                                        },
+                                        "deleted_count": {
+                                            "type": "integer",
+                                            "example": 15
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notifications/stats": {
+            "get": {
+                "tags": ["Notifications"],
+                "summary": "Get notification statistics",
+                "description": "Get notification statistics for the authenticated user",
+                "operationId": "112e774e4bec8233c1639c64fa612942",
+                "responses": {
+                    "200": {
+                        "description": "Notification statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                },
+                                                "unread": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "read": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "by_category": {
+                                                    "properties": {
+                                                        "volunteer_verification": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "new_disaster": {
+                                                            "type": "integer",
+                                                            "example": 8
+                                                        },
+                                                        "new_disaster_report": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "disaster_status_changed": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/pictures/{modelType}/{modelId}": {
+            "get": {
+                "tags": ["Pictures"],
+                "summary": "Get images for model",
+                "description": "Get all images associated with a specific model",
+                "operationId": "e382df6dbed42ee6a00990f2ffd30550",
+                "parameters": [
+                    {
+                        "name": "modelType",
+                        "in": "path",
+                        "description": "Model type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "disaster",
+                                "disaster_report",
+                                "disaster_victim",
+                                "disaster_aid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "modelId",
+                        "in": "path",
+                        "description": "Model ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Images retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid model type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Model not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Disaster not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Pictures"],
+                "summary": "Upload image",
+                "description": "Upload image for a specific model (disaster, disaster_report, disaster_victim, disaster_aid)",
+                "operationId": "d10ec2d6a2d2ef8c6fd3a2422d65bb47",
+                "parameters": [
+                    {
+                        "name": "modelType",
+                        "in": "path",
+                        "description": "Model type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "disaster",
+                                "disaster_report",
+                                "disaster_victim",
+                                "disaster_aid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "modelId",
+                        "in": "path",
+                        "description": "Model ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": ["image"],
+                                "properties": {
+                                    "image": {
+                                        "description": "Image file (max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "caption": {
+                                        "type": "string",
+                                        "example": "Disaster scene photo"
+                                    },
+                                    "alt_text": {
+                                        "type": "string",
+                                        "example": "Photo showing earthquake damage"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Image uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image uploaded successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/pictures/{modelType}/{modelId}/{imageId}": {
+            "get": {
+                "tags": ["Pictures"],
+                "summary": "Get specific image",
+                "description": "Get details of a specific image",
+                "operationId": "7ecacbac80a1d3f9b322a9ad68ec046e",
+                "parameters": [
+                    {
+                        "name": "modelType",
+                        "in": "path",
+                        "description": "Model type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "disaster",
+                                "disaster_report",
+                                "disaster_victim",
+                                "disaster_aid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "modelId",
+                        "in": "path",
+                        "description": "Model ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "description": "Image ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "foreign_id": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "caption": {
+                                                    "type": "string"
+                                                },
+                                                "file_path": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "mine_type": {
+                                                    "type": "string"
+                                                },
+                                                "alt_text": {
+                                                    "type": "string"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid model type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Image not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Pictures"],
+                "summary": "Update image details",
+                "description": "Update metadata for a specific image",
+                "operationId": "755b6b518572a8582845b817b36db30c",
+                "parameters": [
+                    {
+                        "name": "modelType",
+                        "in": "path",
+                        "description": "Model type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "disaster",
+                                "disaster_report",
+                                "disaster_victim",
+                                "disaster_aid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "modelId",
+                        "in": "path",
+                        "description": "Model ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "description": "Image ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "caption": {
+                                        "type": "string",
+                                        "example": "Updated disaster scene photo"
+                                    },
+                                    "alt_text": {
+                                        "type": "string",
+                                        "example": "Updated photo showing earthquake damage"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image updated successfully."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid model type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Image not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Pictures"],
+                "summary": "Delete image",
+                "description": "Delete a specific image and its file from storage",
+                "operationId": "a653e397b52b2913b082556efce6d216",
+                "parameters": [
+                    {
+                        "name": "modelType",
+                        "in": "path",
+                        "description": "Model type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "disaster",
+                                "disaster_report",
+                                "disaster_victim",
+                                "disaster_aid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "modelId",
+                        "in": "path",
+                        "description": "Model ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f659"
+                        }
+                    },
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "description": "Image ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "0199cfbc-eab1-7262-936e-72f9a6c5f660"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid model type",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Image not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Image not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": ["System"],
+                "summary": "Health check",
+                "description": "Check API health status",
+                "operationId": "271f1ed10bdfc379a4725ca95ab1a2c0",
+                "responses": {
+                    "200": {
+                        "description": "API is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "aman"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "bismillah wisuda februari 2026"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "System",
+            "description": "System health and status endpoints"
+        },
+        {
+            "name": "Authentication",
+            "description": "User authentication and profile management"
+        },
+        {
+            "name": "Disasters",
+            "description": "Disaster management operations"
+        },
+        {
+            "name": "Reports",
+            "description": "Disaster reporting operations"
+        },
+        {
+            "name": "Victims",
+            "description": "Disaster victim management"
+        },
+        {
+            "name": "Aids",
+            "description": "Disaster aid management"
+        },
+        {
+            "name": "Notifications",
+            "description": "User notification management"
+        },
+        {
+            "name": "Pictures",
+            "description": "Image upload and management"
+        }
+    ]
+}

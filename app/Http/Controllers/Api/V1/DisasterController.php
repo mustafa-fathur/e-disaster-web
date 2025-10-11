@@ -20,7 +20,25 @@ use Illuminate\Support\Facades\Validator;
 class DisasterController extends Controller
 {
     /**
-     * Dashboard data for officers and volunteers
+     * @OA\Get(
+     *     path="/dashboard",
+     *     summary="Get dashboard data",
+     *     description="Get dashboard statistics and data for authenticated user",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dashboard data retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="assigned_disasters", type="integer"),
+     *             @OA\Property(property="total_reports", type="integer"),
+     *             @OA\Property(property="total_victims", type="integer"),
+     *             @OA\Property(property="total_aids", type="integer"),
+     *             @OA\Property(property="recent_disasters", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="recent_reports", type="array", @OA\Items(type="object"))
+     *         )
+     *     )
+     * )
      */
     public function dashboard(Request $request)
     {
@@ -143,6 +161,63 @@ class DisasterController extends Controller
     /**
      * Get all disasters (with pagination)
      */
+    /**
+     * @OA\Get(
+     *     path="/disasters",
+     *     summary="List all disasters",
+     *     description="Get paginated list of all disasters with optional filtering",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term for title or location",
+     *         required=false,
+     *         @OA\Schema(type="string", example="earthquake")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by disaster status",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"ongoing", "completed", "cancelled"}, example="ongoing")
+     *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Filter by disaster type",
+     *         required=false,
+     *         @OA\Schema(type="string", example="gempa bumi")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Disasters retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="pagination", type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer")
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 15);
@@ -186,7 +261,54 @@ class DisasterController extends Controller
     }
 
     /**
-     * Get specific disaster details
+     * @OA\Get(
+     *     path="/disasters/{id}",
+     *     summary="Get disaster details",
+     *     description="Get detailed information about a specific disaster including volunteers and pictures",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Disaster details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="title", type="string"),
+     *                 @OA\Property(property="description", type="string"),
+     *                 @OA\Property(property="type", type="string"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="source", type="string"),
+     *                 @OA\Property(property="location", type="string"),
+     *                 @OA\Property(property="lat", type="number"),
+     *                 @OA\Property(property="long", type="number"),
+     *                 @OA\Property(property="magnitude", type="number"),
+     *                 @OA\Property(property="depth", type="number"),
+     *                 @OA\Property(property="date", type="string", format="date"),
+     *                 @OA\Property(property="time", type="string"),
+     *                 @OA\Property(property="cancelled_reason", type="string"),
+     *                 @OA\Property(property="cancelled_at", type="string", format="date-time"),
+     *                 @OA\Property(property="completed_at", type="string", format="date-time"),
+     *                 @OA\Property(property="pictures", type="array", @OA\Items(type="object")),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Disaster not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     )
+     * )
      */
     public function show(Request $request, $id)
     {
@@ -246,6 +368,48 @@ class DisasterController extends Controller
 
     /**
      * Create new disaster (Officer only)
+     */
+    /**
+     * @OA\Post(
+     *     path="/disasters",
+     *     summary="Create new disaster",
+     *     description="Create a new disaster and automatically assign creator as volunteer",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title","type","location"},
+     *             @OA\Property(property="title", type="string", example="Earthquake in Jakarta"),
+     *             @OA\Property(property="description", type="string", example="Strong earthquake felt in Jakarta area"),
+     *             @OA\Property(property="type", type="string", enum={"gempa bumi","tsunami","gunung meletus","banjir","kekeringan","angin topan","tahan longsor","bencana non alam","bencana sosial"}, example="gempa bumi"),
+     *             @OA\Property(property="source", type="string", enum={"BMKG","manual"}, example="BMKG"),
+     *             @OA\Property(property="location", type="string", example="Jakarta, Indonesia"),
+     *             @OA\Property(property="lat", type="number", example=-6.2088),
+     *             @OA\Property(property="long", type="number", example=106.8456),
+     *             @OA\Property(property="magnitude", type="number", example=6.5),
+     *             @OA\Property(property="depth", type="number", example=10.5),
+     *             @OA\Property(property="date", type="string", format="date", example="2025-01-15"),
+     *             @OA\Property(property="time", type="string", example="14:30:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Disaster created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function createDisaster(Request $request)
     {
@@ -314,7 +478,58 @@ class DisasterController extends Controller
     }
 
     /**
-     * Update disaster (Officer only)
+     * @OA\Put(
+     *     path="/disasters/{id}",
+     *     summary="Update disaster",
+     *     description="Update a specific disaster (assigned users only)",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string", example="Updated Earthquake in Jakarta"),
+     *             @OA\Property(property="description", type="string", example="Updated strong earthquake felt in Jakarta area"),
+     *             @OA\Property(property="type", type="string", enum={"gempa bumi","tsunami","gunung meletus","banjir","kekeringan","angin topan","tahan longsor","bencana non alam","bencana sosial"}, example="gempa bumi"),
+     *             @OA\Property(property="source", type="string", enum={"BMKG","manual"}, example="BMKG"),
+     *             @OA\Property(property="location", type="string", example="Jakarta, Indonesia"),
+     *             @OA\Property(property="lat", type="number", example=-6.2088),
+     *             @OA\Property(property="long", type="number", example=106.8456),
+     *             @OA\Property(property="magnitude", type="number", example=6.5),
+     *             @OA\Property(property="depth", type="number", example=10.5),
+     *             @OA\Property(property="date", type="string", format="date", example="2025-01-15"),
+     *             @OA\Property(property="time", type="string", example="14:30:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Disaster updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster updated successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied or disaster cannot be modified",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Disaster not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     )
+     * )
      */
     public function updateDisaster(Request $request, $id)
     {
@@ -390,7 +605,64 @@ class DisasterController extends Controller
     }
 
     /**
-     * Cancel disaster (Only for assigned volunteers/officers)
+     * @OA\Put(
+     *     path="/disasters/{id}/cancel",
+     *     summary="Cancel disaster",
+     *     description="Cancel a specific disaster with reason (assigned users only)",
+     *     tags={"Disasters"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"cancelled_reason"},
+     *             @OA\Property(property="cancelled_reason", type="string", example="False alarm - no actual disaster occurred", description="Reason for cancelling the disaster")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Disaster cancelled successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster cancelled successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Disaster cannot be cancelled",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Only ongoing disasters can be cancelled.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Disaster not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function cancelDisaster(Request $request, $id)
     {

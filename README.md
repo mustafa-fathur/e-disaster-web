@@ -74,3 +74,12 @@ Aplikasi akan tersedia di:
 ```
 http://127.0.0.1:8000
 ```
+
+---
+
+## API
+Dokumentasi API yang telah dibuat dapat dilihat pada file [API_DOCUMENTATION.md](API_DOCUMENTATION.md). Atau bisa dengan menjalankan project laravel lalu kemudian membuka url:
+
+```
+http://127.0.0.1:8000/api/documentation#/
+```
