@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\DisasterVictimController;
 use App\Http\Controllers\Api\V1\DisasterAidController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PictureController;
+use App\Http\Controllers\Api\V1\SystemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,7 @@ use App\Http\Controllers\Api\V1\PictureController;
 Route::prefix('v1')->group(function () {
 
     // Healthcheck
-    Route::get('/health', function () {
-        return response()->json(['status' => 'aman']);
-    });
+    Route::get('/health', [SystemController::class, 'health']);
 
     // Public Auth Endpoints
     Route::prefix('auth')->group(function () {

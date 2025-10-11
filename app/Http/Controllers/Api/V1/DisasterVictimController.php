@@ -14,7 +14,70 @@ use Illuminate\Support\Facades\Validator;
 class DisasterVictimController extends Controller
 {
     /**
-     * Get all victims for a specific disaster
+     * @OA\Get(
+     *     path="/disasters/{id}/victims",
+     *     summary="Get disaster victims",
+     *     description="Get paginated list of victims for a specific disaster (assigned users only)",
+     *     tags={"Victims"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term for name or description",
+     *         required=false,
+     *         @OA\Schema(type="string", example="John")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by victim status",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"luka ringan","luka berat","meninggal","hilang"})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Victims retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Disaster not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     )
+     * )
      */
     public function getDisasterVictims(Request $request, $id)
     {
@@ -58,6 +121,59 @@ class DisasterVictimController extends Controller
 
     /**
      * Create new disaster victim
+     */
+    /**
+     * @OA\Post(
+     *     path="/disasters/{id}/victims",
+     *     summary="Create disaster victim record",
+     *     description="Create a new victim record for a specific disaster (assigned users only)",
+     *     tags={"Victims"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","status"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="age", type="integer", example=35),
+     *             @OA\Property(property="gender", type="boolean", example=true),
+     *             @OA\Property(property="status", type="string", enum={"luka ringan","luka berat","meninggal","hilang"}, example="luka ringan"),
+     *             @OA\Property(property="description", type="string", example="Victim found trapped under debris"),
+     *             @OA\Property(property="location", type="string", example="Building A, Floor 2"),
+     *             @OA\Property(property="lat", type="number", example=-6.2088),
+     *             @OA\Property(property="long", type="number", example=106.8456)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Victim record created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim created successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function createDisasterVictim(Request $request, $id)
     {
@@ -135,6 +251,63 @@ class DisasterVictimController extends Controller
     /**
      * Get specific disaster victim
      */
+    /**
+     * @OA\Get(
+     *     path="/disasters/{id}/victims/{victimId}",
+     *     summary="Get disaster victim details",
+     *     description="Get detailed information about a specific disaster victim (assigned users only)",
+     *     tags={"Victims"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="victimId",
+     *         in="path",
+     *         description="Victim ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Victim details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="age", type="integer"),
+     *                 @OA\Property(property="gender", type="boolean"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="description", type="string"),
+     *                 @OA\Property(property="location", type="string"),
+     *                 @OA\Property(property="lat", type="number"),
+     *                 @OA\Property(property="long", type="number"),
+     *                 @OA\Property(property="pictures", type="array", @OA\Items(type="object")),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Victim not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim not found.")
+     *         )
+     *     )
+     * )
+     */
     public function getDisasterVictim(Request $request, $id, $victimId)
     {
         $disaster = Disaster::find($id);
@@ -197,6 +370,64 @@ class DisasterVictimController extends Controller
 
     /**
      * Update disaster victim
+     */
+    /**
+     * @OA\Put(
+     *     path="/disasters/{id}/victims/{victimId}",
+     *     summary="Update disaster victim record",
+     *     description="Update a specific disaster victim record (assigned users only)",
+     *     tags={"Victims"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="victimId",
+     *         in="path",
+     *         description="Victim ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="John Doe Updated"),
+     *             @OA\Property(property="age", type="integer", example=36),
+     *             @OA\Property(property="gender", type="boolean", example=true),
+     *             @OA\Property(property="status", type="string", enum={"luka ringan","luka berat","meninggal","hilang"}, example="luka berat"),
+     *             @OA\Property(property="description", type="string", example="Updated victim status - now in stable condition"),
+     *             @OA\Property(property="location", type="string", example="Hospital A, Room 205"),
+     *             @OA\Property(property="lat", type="number", example=-6.2088),
+     *             @OA\Property(property="long", type="number", example=106.8456)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Victim record updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim updated successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Victim not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim not found.")
+     *         )
+     *     )
+     * )
      */
     public function updateDisasterVictim(Request $request, $id, $victimId)
     {
@@ -268,6 +499,50 @@ class DisasterVictimController extends Controller
 
     /**
      * Delete disaster victim
+     */
+    /**
+     * @OA\Delete(
+     *     path="/disasters/{id}/victims/{victimId}",
+     *     summary="Delete disaster victim record",
+     *     description="Delete a specific disaster victim record (assigned users only)",
+     *     tags={"Victims"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Disaster ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="victimId",
+     *         in="path",
+     *         description="Victim ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Victim record deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim deleted successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Access denied - not assigned to disaster",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Access denied. You are not assigned to this disaster.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Victim not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster victim not found.")
+     *         )
+     *     )
+     * )
      */
     public function deleteDisasterVictim(Request $request, $id, $victimId)
     {

@@ -12,7 +12,55 @@ use Illuminate\Support\Facades\Storage;
 class PictureController extends Controller
 {
     /**
-     * Upload image for a specific model
+     * @OA\Post(
+     *     path="/pictures/{modelType}/{modelId}",
+     *     summary="Upload image",
+     *     description="Upload image for a specific model (disaster, disaster_report, disaster_victim, disaster_aid)",
+     *     tags={"Pictures"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="modelType",
+     *         in="path",
+     *         description="Model type",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"disaster","disaster_report","disaster_victim","disaster_aid"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="modelId",
+     *         in="path",
+     *         description="Model ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"image"},
+     *                 @OA\Property(property="image", type="string", format="binary", description="Image file (max 2MB)"),
+     *                 @OA\Property(property="caption", type="string", example="Disaster scene photo"),
+     *                 @OA\Property(property="alt_text", type="string", example="Photo showing earthquake damage")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Image uploaded successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image uploaded successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function uploadImage(Request $request, $modelType, $modelId)
     {
@@ -79,7 +127,48 @@ class PictureController extends Controller
     }
 
     /**
-     * Get all images for a specific model
+     * @OA\Get(
+     *     path="/pictures/{modelType}/{modelId}",
+     *     summary="Get images for model",
+     *     description="Get all images associated with a specific model",
+     *     tags={"Pictures"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="modelType",
+     *         in="path",
+     *         description="Model type",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"disaster","disaster_report","disaster_victim","disaster_aid"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="modelId",
+     *         in="path",
+     *         description="Model ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Images retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid model type",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Model not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Disaster not found.")
+     *         )
+     *     )
+     * )
      */
     public function getImages(Request $request, $modelType, $modelId)
     {
@@ -124,7 +213,66 @@ class PictureController extends Controller
     }
 
     /**
-     * Get specific image
+     * @OA\Get(
+     *     path="/pictures/{modelType}/{modelId}/{imageId}",
+     *     summary="Get specific image",
+     *     description="Get details of a specific image",
+     *     tags={"Pictures"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="modelType",
+     *         in="path",
+     *         description="Model type",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"disaster","disaster_report","disaster_victim","disaster_aid"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="modelId",
+     *         in="path",
+     *         description="Model ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="imageId",
+     *         in="path",
+     *         description="Image ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Image details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="foreign_id", type="string"),
+     *                 @OA\Property(property="type", type="string"),
+     *                 @OA\Property(property="caption", type="string"),
+     *                 @OA\Property(property="file_path", type="string"),
+     *                 @OA\Property(property="url", type="string"),
+     *                 @OA\Property(property="mine_type", type="string"),
+     *                 @OA\Property(property="alt_text", type="string"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid model type",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Image not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image not found.")
+     *         )
+     *     )
+     * )
      */
     public function getImage(Request $request, $modelType, $modelId, $imageId)
     {
@@ -163,7 +311,71 @@ class PictureController extends Controller
     }
 
     /**
-     * Update image details
+     * @OA\Put(
+     *     path="/pictures/{modelType}/{modelId}/{imageId}",
+     *     summary="Update image details",
+     *     description="Update metadata for a specific image",
+     *     tags={"Pictures"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="modelType",
+     *         in="path",
+     *         description="Model type",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"disaster","disaster_report","disaster_victim","disaster_aid"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="modelId",
+     *         in="path",
+     *         description="Model ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="imageId",
+     *         in="path",
+     *         description="Image ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="caption", type="string", example="Updated disaster scene photo"),
+     *             @OA\Property(property="alt_text", type="string", example="Updated photo showing earthquake damage")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Image updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image updated successfully."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid model type",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Image not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image not found.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function updateImage(Request $request, $modelType, $modelId, $imageId)
     {
@@ -217,7 +429,55 @@ class PictureController extends Controller
     }
 
     /**
-     * Delete image
+     * @OA\Delete(
+     *     path="/pictures/{modelType}/{modelId}/{imageId}",
+     *     summary="Delete image",
+     *     description="Delete a specific image and its file from storage",
+     *     tags={"Pictures"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="modelType",
+     *         in="path",
+     *         description="Model type",
+     *         required=true,
+     *         @OA\Schema(type="string", enum={"disaster","disaster_report","disaster_victim","disaster_aid"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="modelId",
+     *         in="path",
+     *         description="Model ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659")
+     *     ),
+     *     @OA\Parameter(
+     *         name="imageId",
+     *         in="path",
+     *         description="Image ID",
+     *         required=true,
+     *         @OA\Schema(type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f660")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Image deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image deleted successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid model type",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid model type. Must be one of: disaster, disaster_report, disaster_victim, disaster_aid")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Image not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Image not found.")
+     *         )
+     *     )
+     * )
      */
     public function deleteImage(Request $request, $modelType, $modelId, $imageId)
     {

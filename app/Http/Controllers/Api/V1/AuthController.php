@@ -15,6 +15,59 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/auth/login",
+     *     summary="User login",
+     *     description="Authenticate user and return access token",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="fathur@edisaster.test"),
+     *             @OA\Property(property="password", type="string", format="password", example="password", minLength=6)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Login successful"),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="string", example="0199cfbc-eab1-7262-936e-72f9a6c5f659"),
+     *                 @OA\Property(property="name", type="string", example="Fathur"),
+     *                 @OA\Property(property="email", type="string", example="fathur@edisaster.test"),
+     *                 @OA\Property(property="type", type="string", example="officer"),
+     *                 @OA\Property(property="status", type="string", example="active")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="1|QLeddZ0IkK8cMP1ARfjPnpRpIbuhiMHGIlufQspye1556327")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Account not active",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Account is not active. Please contact administrator.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -60,6 +113,57 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/auth/register",
+     *     summary="User registration",
+     *     description="Register a new volunteer user (requires admin approval)",
+     *     tags={"Authentication"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password","password_confirmation","nik","phone","address","gender","date_of_birth"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123", minLength=8),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123"),
+     *             @OA\Property(property="nik", type="string", example="1234567890123456"),
+     *             @OA\Property(property="phone", type="string", example="+6281234567890"),
+     *             @OA\Property(property="address", type="string", example="Jl. Example No. 123"),
+     *             @OA\Property(property="gender", type="boolean", example=true),
+     *             @OA\Property(property="date_of_birth", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="reason_to_join", type="string", example="Want to help disaster victims")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Registration successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Registration successful. Please wait for admin approval."),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="email", type="string"),
+     *                 @OA\Property(property="type", type="string", example="volunteer"),
+     *                 @OA\Property(property="status", type="string", example="registered"),
+     *                 @OA\Property(property="nik", type="string"),
+     *                 @OA\Property(property="phone", type="string"),
+     *                 @OA\Property(property="address", type="string"),
+     *                 @OA\Property(property="gender", type="boolean"),
+     *                 @OA\Property(property="date_of_birth", type="string", format="date")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -114,6 +218,29 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/auth/logout",
+     *     summary="User logout",
+     *     description="Logout user and invalidate access token",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         auth('sanctum')->user()->currentAccessToken()->delete();
@@ -123,6 +250,54 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/me",
+     *     summary="Get current user profile",
+     *     description="Get authenticated user's profile information including profile picture",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User profile retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="email", type="string"),
+     *                 @OA\Property(property="type", type="string"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="email_verified", type="boolean"),
+     *                 @OA\Property(property="nik", type="string"),
+     *                 @OA\Property(property="phone", type="string"),
+     *                 @OA\Property(property="address", type="string"),
+     *                 @OA\Property(property="gender", type="boolean"),
+     *                 @OA\Property(property="date_of_birth", type="string", format="date"),
+     *                 @OA\Property(property="reason_to_join", type="string"),
+     *                 @OA\Property(property="registered_at", type="string", format="date-time"),
+     *                 @OA\Property(property="approved_at", type="string", format="date-time"),
+     *                 @OA\Property(property="timezone", type="string"),
+     *                 @OA\Property(property="location", type="string"),
+     *                 @OA\Property(property="lat", type="number"),
+     *                 @OA\Property(property="long", type="number"),
+     *                 @OA\Property(property="profile_picture", type="object", nullable=true,
+     *                     @OA\Property(property="id", type="string"),
+     *                     @OA\Property(property="url", type="string"),
+     *                     @OA\Property(property="caption", type="string"),
+     *                     @OA\Property(property="alt_text", type="string")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function me(Request $request)
     {
         $user = auth('sanctum')->user();
@@ -162,6 +337,48 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/profile",
+     *     summary="Update user profile",
+     *     description="Update authenticated user's profile information",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="nik", type="string", example="1234567890123456"),
+     *             @OA\Property(property="phone", type="string", example="+6281234567890"),
+     *             @OA\Property(property="address", type="string", example="Jl. Example No. 123"),
+     *             @OA\Property(property="gender", type="boolean", example=true),
+     *             @OA\Property(property="date_of_birth", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="reason_to_join", type="string", example="Want to help disaster victims"),
+     *             @OA\Property(property="timezone", type="string", example="Asia/Jakarta"),
+     *             @OA\Property(property="location", type="string", example="Jakarta"),
+     *             @OA\Property(property="lat", type="number", example=-6.2088),
+     *             @OA\Property(property="long", type="number", example=106.8456)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile updated successfully"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function updateProfile(Request $request)
     {
         $user = auth('sanctum')->user();
@@ -227,6 +444,38 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/profile/password",
+     *     summary="Update user password",
+     *     description="Change authenticated user's password",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"current_password","password","password_confirmation"},
+     *             @OA\Property(property="current_password", type="string", format="password", example="oldpassword"),
+     *             @OA\Property(property="password", type="string", format="password", example="newpassword123", minLength=8),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Password updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed or incorrect current password",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Current password is incorrect")
+     *         )
+     *     )
+     * )
+     */
     public function updatePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -260,6 +509,49 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/profile/picture",
+     *     summary="Upload profile picture",
+     *     description="Upload or update user's profile picture",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"image"},
+     *                 @OA\Property(property="image", type="string", format="binary", description="Image file (max 2MB)"),
+     *                 @OA\Property(property="caption", type="string", example="My profile picture"),
+     *                 @OA\Property(property="alt_text", type="string", example="Profile photo of John Doe")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile picture updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile picture updated successfully"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="url", type="string"),
+     *                 @OA\Property(property="caption", type="string"),
+     *                 @OA\Property(property="alt_text", type="string"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation failed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function updateProfilePicture(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -314,6 +606,29 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/profile/picture",
+     *     summary="Delete profile picture",
+     *     description="Delete user's profile picture",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile picture deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile picture deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Profile picture not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile picture not found")
+     *         )
+     *     )
+     * )
+     */
     public function deleteProfilePicture(Request $request)
     {
         $user = auth('sanctum')->user();
